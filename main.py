@@ -1,5 +1,6 @@
+from app.gui.main_window import MainWindow
 from models import Base, BankAccount
-from tkinter import Tk, ttk, Toplevel, Menu
+from tkinter import ttk, Toplevel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -44,35 +45,14 @@ def create_bank_account_window(master, engine):
 def main():
     engine = create_engine('sqlite+pysqlite:///expenses.db', echo=True)
     Base.metadata.create_all(engine)
-    
-    # Initialize the root window
-    root = Tk()
-    root.title('pyExpenses')
 
-    # Create menu bar
-    menu_bar = Menu(master=root)
-    root.config(menu=menu_bar)
+    # Initialize the main window
+    main_window = MainWindow()
 
-    # File menu
-    file_menu = Menu(menu_bar, tearoff=0)
-    menu_bar.add_cascade(label='File', menu=file_menu)
-
-    # Help menu
-    help_menu = Menu(menu_bar, tearoff=0)
-    menu_bar.add_cascade(label="Help", menu=help_menu)
-
-    help_menu.add_command(label="About", command=lambda: print("Tkinter App v1.0"))
-
-    # Create the frame and "pack" it into the window
-    # We add padding so the content doesn't touch the edges
-    mainFrame = ttk.Frame(master=root, padding=10)
-    mainFrame.pack(fill='both', expand=True)
-
-    create_bank_account_window(root, engine)
+    # create_bank_account_window(main_window, engine)
 
     # Start the application
-    root.mainloop()
-
+    main_window.mainloop()
 
 if __name__ == "__main__":
     main()
