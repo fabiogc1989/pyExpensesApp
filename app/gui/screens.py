@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import app.gui.widgets as widgets
 
 
 class StartScreen(tk.Frame):
@@ -13,28 +14,19 @@ class StartScreen(tk.Frame):
 class BankAccountScreen(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
+        self.pack(fill="both", expand=True)
 
         # Define columns
         columns = ("id","iban",)
 
-        table = ttk.Treeview(self, columns=columns,show="headings")
-        
-        vertical_scrollbar = ttk.Scrollbar(master=table, orient=tk.VERTICAL, command=table.yview)
-        horizontal_scrollbar = ttk.Scrollbar(master=table, orient=tk.HORIZONTAL, command=table.xview)
-
-        table.configure(yscrollcommand=vertical_scrollbar.set, xscrollcommand=horizontal_scrollbar.set)
-
-        self.pack(fill="both", expand=True)
-        vertical_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        horizontal_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-        table.pack(side=tk.LEFT, fill="both", expand=True)
+        table = widgets.ScrollableTreeView(self, columns=columns, show="headings")
 
         # Configure the headers (what appears on top)
         for column in columns:
-            table.heading(column=column, text=column.capitalize())
-            table.column(column=column, stretch=True)
+            table.tree_view.heading(column=column, text=column.capitalize())
+            table.tree_view.column(column=column, stretch=True)
 
         # Insert data
         data = [(x, "PT50" + str(x) * 28) for x in range(1, 501)]
         for item in data:
-            table.insert(parent="",index=tk.END,values=item)
+            table.tree_view.insert(parent="",index=tk.END,values=item)
