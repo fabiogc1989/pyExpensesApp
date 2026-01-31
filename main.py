@@ -1,8 +1,6 @@
 from app.gui.main_window import MainWindow
-from models import Base, BankAccount
+from core.database import init_db
 from tkinter import ttk, Toplevel
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 def create_bank_account_window(master, engine):
     backAccountWindow = Toplevel(master)
@@ -28,11 +26,7 @@ def create_bank_account_window(master, engine):
 
     # Row 1 - submit & cancel buttons
     def on_submit():
-        with Session(engine) as session:
-            bank_account = BankAccount(iban=ibanEntry.get())
-            session.add(bank_account)
-            session.commit()
-        backAccountWindow.destroy()
+        pass
 
     submitButton = ttk.Button(master=backAccountFrame, text="Save", command=on_submit)
     submitButton.grid(row=1, column=1, sticky='ew', pady=10)
@@ -43,8 +37,8 @@ def create_bank_account_window(master, engine):
 
 
 def main():
-    engine = create_engine('sqlite+pysqlite:///expenses.db', echo=True)
-    Base.metadata.create_all(engine)
+    # Initialize the database
+    init_db()
 
     # Initialize the main window
     main_window = MainWindow()
@@ -53,6 +47,7 @@ def main():
 
     # Start the application
     main_window.mainloop()
+
 
 if __name__ == "__main__":
     main()
