@@ -1,8 +1,6 @@
 from app.gui.main_window import MainWindow
 from core.database import init_db
 from tkinter import ttk, Toplevel
-
-from models.bank_account import BankAccount
 from repositories.bank_account_repository import BankAccountRepository
 
 def create_bank_account_window(master, engine):
@@ -42,12 +40,6 @@ def create_bank_account_window(master, engine):
 def main():
     # Initialize the database
     init_db()
-
-    repo = BankAccountRepository()
-    entity = BankAccount()
-    entity.iban = 'PT50000201231234567890154'
-    inserted = repo.insert(entity=entity)
-    print(f'Inserted: {inserted}')
 
     # Initialize the main window
     #main_window = MainWindow()
