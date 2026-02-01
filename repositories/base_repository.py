@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class BaseRepository[T](ABC):
-    """Generic abstract repository interface.
+    """
+    Generic abstract repository interface.
 
     Subclasses should implement methods to perform basic CRUD operations
     for entities of type `T`. Methods are intentionally abstract so that
@@ -10,20 +11,20 @@ class BaseRepository[T](ABC):
     concrete implementations.
     """
     @abstractmethod
-    def get_all(self) -> list[T]:
+    def get_all(self) -> list[T]|iter[T]:
         """
         Retrieves all records of the entity from the database.
         
         :param self: The repository instance (the current object on which the method is called).
-        :return: List of objects of type T.
-        :rtype: list[T]
+        :return: (List|Iterator) of objects of type T.
+        :rtype: list[T]|iter[T]
         """
         ...
 
     @abstractmethod
     def get(self, id: int) -> T:
         """
-        Docstring for get
+        Retrieve a record of the entity from the database.
         
         :param self: The repository instance (the current object on which the method is called).
         :param id: The ID of the entity to retrieve.
@@ -36,7 +37,7 @@ class BaseRepository[T](ABC):
     @abstractmethod
     def delete(self, entity: T) -> bool:
         """
-        Docstring for delete
+        Remove a record of the entity from the database.
         
         :param self: The repository instance (the current object on which the method is called).
         :param entity: The entity to delete.
@@ -48,8 +49,26 @@ class BaseRepository[T](ABC):
 
     @abstractmethod
     def update(self, entity: T) -> bool:
+        """
+        Docstring for update
+        
+        :param self: The repository instance (the current object on which the method is called).
+        :param entity: The entity to update
+        :type entity: T
+        :return: True if the entity was updated, False otherwise
+        :rtype: bool
+        """
         ...
 
     @abstractmethod
     def insert(self, entity: T) -> bool:
+        """
+        Docstring for insert
+        
+        :param self: The repository instance (the current object on which the method is called).
+        :param entity: The new entity to insert
+        :type entity: T
+        :return: True if the new entity was inserted, False otherwise
+        :rtype: bool
+        """
         ...
