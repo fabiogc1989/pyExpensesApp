@@ -1,24 +1,25 @@
-from core.database import SessionLocal, BankAccount
-from .base_repository import BaseRepository
+from core.database import SessionLocal, Credit
+from repositories.base_repository import BaseRepository
 
-class BankAccountRepository(BaseRepository[BankAccount]):
-    def get_all(self) -> list[BankAccount]|iter[BankAccount]:
+
+class CreditRepository(BaseRepository[Credit]):
+    def get_all(self) -> list[Credit]|iter[Credit]:
         try:
             with SessionLocal() as session:
-                entities = session.query(BankAccount).all()
+                entities = session.query(Credit).all()
             return entities
         except:
             return []
 
-    def get(self, id: int) -> BankAccount:
+    def get(self, id: int) -> Credit:
         try:
             with SessionLocal() as session:
-                entity = session.get(BankAccount, id)
+                entity = session.get(Credit, id)
             return entity
         except:
             return None
 
-    def delete(self, entity: BankAccount) -> bool:
+    def delete(self, entity: Credit) -> bool:
         try:
             with SessionLocal() as session:
                 session.delete(entity)
@@ -27,7 +28,7 @@ class BankAccountRepository(BaseRepository[BankAccount]):
         except:
             return False
 
-    def update(self, entity: BankAccount) -> bool:
+    def update(self, entity: Credit) -> bool:
         try:
             with SessionLocal() as session:
                 session.merge(entity)
@@ -36,7 +37,7 @@ class BankAccountRepository(BaseRepository[BankAccount]):
         except:
             return False
     
-    def insert(self, entity: BankAccount) -> bool:
+    def insert(self, entity: Credit) -> bool:
         try:
             with SessionLocal() as session:
                 session.add(entity)
