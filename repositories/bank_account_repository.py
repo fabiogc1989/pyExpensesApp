@@ -1,6 +1,4 @@
 from core.database import SessionLocal, BankAccount
-from models.bank_account_create import BankAccountCreate
-from models.bank_account_edit import BankAccountEdit
 from models.database_schema import BankAccountSchema
 from .base_repository import BaseRepository
 

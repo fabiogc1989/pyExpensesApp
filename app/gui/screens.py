@@ -1,5 +1,6 @@
 import app.gui.widgets as widgets
 import tkinter as tk
+from repositories.bank_account_repository import BankAccountRepository
 
 
 class StartScreen(tk.Frame):
@@ -16,6 +17,7 @@ class StartScreen(tk.Frame):
 class BankAccountScreen(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
+        self.repository = BankAccountRepository()
         self.pack(fill="both", expand=True)
         self.__setup_widgets()
 
@@ -38,7 +40,7 @@ class BankAccountScreen(tk.Frame):
             table.tree_view.column(column=column, stretch=True)
 
         # Insert data
-        data = [(x, "PT50" + str(x) * 28) for x in range(1, 501)]
+        data = self.repository.get_all()
         for item in data:
             table.tree_view.insert(parent="",index=tk.END,values=item)
         

@@ -16,8 +16,8 @@ class BankAccountSchema(BaseModel):
     @field_validator('id')
     @classmethod
     def validate_id(cls, v: int) -> int:
-        if v <= 0:
-            raise ValueError('The ID must be a positive integer.')
+        if v < 0:
+            raise ValueError('ID must be a non-negative integer.')
         return v
 
     @field_validator('iban')
