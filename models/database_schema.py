@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 
 class BankAccountSchema(BaseModel):
@@ -12,6 +12,20 @@ class BankAccountSchema(BaseModel):
 
     # This allows Pydantic to read SQLAlchemy models
     model_config = ConfigDict(from_attributes=True)
+
+    @field_validator('id')
+    @classmethod
+    def validate_id(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError('The ID must be a positive integer.')
+        return v
+
+    @field_validator('iban')
+    @classmethod
+    def validate_iban(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError('The IBAN cannot be empty or contain only spaces.')
+        return v.upper()  # Convert to uppercase for consistency
 
 
 class CreditSchema(BaseModel):

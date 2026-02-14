@@ -1,46 +1,50 @@
 from core.database import SessionLocal, Debit
+from models.database_schema import DebitSchema
 from repositories.base_repository import BaseRepository
 
 
-class DebitRepository(BaseRepository[Debit]):
-    def get_all(self) -> list[Debit]|iter[Debit]:
+class DebitRepository(BaseRepository[DebitSchema]):
+    def get_all(self) -> list[DebitSchema]|iter[DebitSchema]:
         try:
             with SessionLocal() as session:
                 entities = session.query(Debit).all()
-            return entities
+            return [DebitSchema.model_validate(entity) for entity in entities]
         except:
             return []
 
-    def get(self, id: int) -> Debit:
+    def get(self, id: int) -> DebitSchema:
         try:
             with SessionLocal() as session:
                 entity = session.get(Debit, id)
-            return entity
+            return DebitSchema.model_validate(entity) if entity else None
         except:
             return None
 
-    def delete(self, entity: Debit) -> bool:
+    def delete(self, entity: DebitSchema) -> bool:
         try:
             with SessionLocal() as session:
-                session.delete(entity)
+                db_debit = Debit(**entity.model_dump())
+                session.delete(db_debit)
                 session.commit()
             return True
         except:
             return False
 
-    def update(self, entity: Debit) -> bool:
+    def update(self, entity: DebitSchema) -> bool:
         try:
             with SessionLocal() as session:
-                session.merge(entity)
+                db_debit = Debit(**entity.model_dump())
+                session.merge(db_debit)
                 session.commit()
             return True
         except:
             return False
     
-    def insert(self, entity: Debit) -> bool:
+    def insert(self, entity: DebitSchema) -> bool:
         try:
             with SessionLocal() as session:
-                session.add(entity)
+                db_debit = Debit(**entity.model_dump())
+                session.add(db_debit)
                 session.commit()
             return True
         except:

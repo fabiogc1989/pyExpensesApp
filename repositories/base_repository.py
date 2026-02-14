@@ -35,13 +35,13 @@ class BaseRepository[T](ABC):
         ...
 
     @abstractmethod
-    def delete(self, entity: T) -> bool:
+    def delete(self, id: int) -> bool:
         """
         Remove a record of the entity from the database.
         
         :param self: The repository instance (the current object on which the method is called).
-        :param entity: The entity to delete.
-        :type entity: T
+        :param id: The ID of the entity to delete.
+        :type id: int
         :return: True if the entity was deleted, False otherwise.
         :rtype: bool
         """
