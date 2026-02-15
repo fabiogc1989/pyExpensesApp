@@ -7,8 +7,9 @@ class BankAccountRepository(BaseRepository[BankAccountSchema]):
         try:
             with SessionLocal() as session:
                 entities = session.query(BankAccount).all()
-            return [BankAccountSchema.model_validate(entity) for entity in entities]
-        except:
+                return [BankAccountSchema.model_validate(entity) for entity in entities]
+        except Exception as e:
+            print(f'Erro na busca de contas: {e}')
             return []
 
     def get(self, id: int) -> BankAccountSchema:

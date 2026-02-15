@@ -30,7 +30,7 @@ class BankAccountScreen(tk.Frame):
         search_frame.pack(anchor="ne")
         
         # Define columns
-        columns = ("id","iban",)
+        columns = ("id","iban")
         table = widgets.ScrollableTreeView(self, columns=columns, show="headings")
         table.pack(side=tk.LEFT, fill="both", expand=True)
 
@@ -42,5 +42,5 @@ class BankAccountScreen(tk.Frame):
         # Insert data
         data = self.repository.get_all()
         for item in data:
-            table.tree_view.insert(parent="",index=tk.END,values=item)
+            table.tree_view.insert(parent="",index=tk.END,values=(item.id, item.iban))
         
