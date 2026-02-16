@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from .modal.bank_account_form_modal import BankAccountFormModal
 from .screens import StartScreen, BankAccountScreen
 
 
@@ -31,7 +31,8 @@ class MainWindow(tk.Tk):
         # Bank Account Menu
         bank_account_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Bank Account", menu=bank_account_menu)
-        bank_account_menu.add_command(label="View Accounts", command=lambda: self.show_screen(BankAccountScreen))
+        bank_account_menu.add_command(label='Add Account', command=lambda: BankAccountFormModal())
+        bank_account_menu.add_command(label='View Accounts', command=lambda: self.show_screen(BankAccountScreen))
 
         # Help menu
         help_menu = tk.Menu(menu_bar, tearoff=0)
