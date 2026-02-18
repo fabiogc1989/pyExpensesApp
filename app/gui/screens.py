@@ -7,11 +7,8 @@ class StartScreen(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.pack(fill="both", expand=True)
-        self.__setup_widgets()
-    
-    def __setup_widgets(self):
         label = tk.Label(self, text="Welcome to pyExpenses!", font=("Arial", 18))
-        label.pack(pady=20)
+        label.pack(pady=20)        
 
 
 class BankAccountScreen(tk.Frame):
@@ -19,9 +16,7 @@ class BankAccountScreen(tk.Frame):
         super().__init__(master)
         self.repository = BankAccountRepository()
         self.pack(fill="both", expand=True)
-        self.__setup_widgets()
-
-    def __setup_widgets(self):
+        
         search_frame = tk.Frame(master=self)
         iban_search_entry = tk.Entry(master=search_frame)
         iban_search_entry.grid(column=0, row=0)
