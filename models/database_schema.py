@@ -1,9 +1,10 @@
 from datetime import date
 from pydantic import BaseModel, ConfigDict, field_validator
+from typing import Optional
 
 
 class BankAccountSchema(BaseModel):
-    id: int
+    id: Optional[int] = None
     iban: str
 
     # Here's the magic: Pydantic converts the list of objects from SQL
@@ -29,7 +30,7 @@ class BankAccountSchema(BaseModel):
 
 
 class CreditSchema(BaseModel):
-    id: int
+    id: Optional[int] = None
     description: str
     amount: float
     date: date
@@ -42,7 +43,7 @@ class CreditSchema(BaseModel):
 
 
 class DebitSchema(BaseModel):
-    id: int
+    id: Optional[int] = None
     description: str
     amount: float
     date: date
