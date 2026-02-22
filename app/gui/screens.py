@@ -1,6 +1,8 @@
+from app.gui.modal.bank_account_form_modal import BankAccountFormModal
 import app.gui.widgets as widgets
 import tkinter as tk
 from tkinter import ttk, Event
+from models.database_schema import BankAccountSchema
 from repositories.bank_account_repository import BankAccountRepository
 
 
@@ -55,4 +57,6 @@ class BankAccountScreen(ttk.Frame):
         item_id = self.table.tree_view.identify_row(event.y)
         if item_id:
             values = self.table.tree_view.item(item_id, 'values')
-            print('double click: ', values)
+            data = BankAccountSchema(id=values[0], iban=values[1])
+            BankAccountFormModal(master=self, model=data)
+            self.table.tree_view.item(item_id, values=(data.id, data.iban))
