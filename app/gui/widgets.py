@@ -1,5 +1,6 @@
+from typing import Callable, Literal
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Event, ttk
 
 
 class ScrollableTreeView(tk.Frame):
@@ -22,3 +23,6 @@ class ScrollableTreeView(tk.Frame):
         self.__horizontal_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         self.__vertical_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.__treeview.pack(side=side, fill=fill, expand=expand, *args, **kwargs)
+
+    def bind(self, sequence: str | None = None, func: Callable[[Event], object] | None = None, add: bool | Literal['', '+'] | None = None):
+        self.tree_view.bind(sequence=sequence, func=func, add=add)
