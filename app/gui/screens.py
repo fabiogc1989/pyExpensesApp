@@ -32,6 +32,7 @@ class BankAccountScreen(ttk.Frame):
         # Bind events
         # Selection bind
         self.table.bind('<<TreeviewSelect>>', self.on_table_select)
+        self.table.bind('<Double-1>', self.on_table_double_click)
 
         self.table.pack(side=tk.LEFT, fill="both", expand=True)
 
@@ -48,4 +49,10 @@ class BankAccountScreen(ttk.Frame):
     def on_table_select(self, event: Event):
         item_id = self.table.tree_view.selection()[0]
         values = self.table.tree_view.item(item_id, 'values')
-        print(values)
+        print('selected: ', values)
+    
+    def on_table_double_click(self, event: Event):
+        item_id = self.table.tree_view.identify_row(event.y)
+        if item_id:
+            values = self.table.tree_view.item(item_id, 'values')
+            print('double click: ', values)
