@@ -45,19 +45,26 @@ class BankAccountScreen(ttk.Frame):
         data = self.repository.get_all()
         for item in data:
             self.table.tree_view.insert(parent="",index=tk.END, iid=item.id, values=(item.id, item.iban))
+        
+        self.contextMenu = None
 
-    def __identify_table_row(self, y: int) -> str:
+    def _identify_table_row(self, y: int) -> str:
         return self.table.tree_view.identify_row(y)
     
-    def __edit_table_row(self, item: tuple[any, ...]):
+    def _edit_table_row(self, item: tuple[any, ...]):
         data = BankAccountSchema(id=item[0], iban=item[1])
         BankAccountFormModal(master=self, model=data)
         self.table.tree_view.item(item[0], values=(data.id, data.iban))
 
     def on_right_click(self, event: Event):
-        item_id = self.__identify_table_row(event.y)
+        if self.contextMenu is not None:
+            self.contextMenu.destroy()
+            self.contextMenu = None
+
+        item_id = self._identify_table_row(event.y)
         if item_id:
             self.table.tree_view.selection_set([item_id])
             selected_item = self.table.tree_view.item(item_id, 'values')
-            commands=[('Edit', lambda: self.__edit_table_row(selected_item)), ('Delete', lambda: print('delete'))]
-            widgets.ContextMenu(master=self, commands=commands).show_menu(event=event)
+            commands=[('Edit', lambda: self._edit_table_row(selected_item)), ('Delete', lambda: print('delete'))]
+            self.contextMenu = widgets.ContextMenu(master=self, commands=commands)
+            self.contextMenu.show_menu(event=event)
