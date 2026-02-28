@@ -44,3 +44,4 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
         else:
             self.model.iban = self.ibanEntry.get()
             self.__repository.update(self.model)
+        self.destroy()

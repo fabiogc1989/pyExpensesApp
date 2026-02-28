@@ -1,4 +1,4 @@
-from typing import Callable, Literal
+from typing import Callable, Literal, List
 import tkinter as tk
 from tkinter import Event, ttk
 
@@ -26,3 +26,18 @@ class ScrollableTreeView(tk.Frame):
 
     def bind(self, sequence: str | None = None, func: Callable[[Event], object] | None = None, add: bool | Literal['', '+'] | None = None):
         self.tree_view.bind(sequence=sequence, func=func, add=add)
+
+
+class ContextMenu(tk.Menu):
+    def __init__(self, commands: List[tuple[str, callable]], master = None,):
+        super().__init__(master, tearoff=0)
+
+        for label, command in commands:
+            self.add_command(label=label, command=command)
+        
+    def show_menu(self, event):
+        try:
+            self.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.grab_release()
+        

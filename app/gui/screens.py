@@ -32,9 +32,7 @@ class BankAccountScreen(ttk.Frame):
         self.table = widgets.ScrollableTreeView(self, columns=columns, show="headings", selectmode= "browse")
         
         # Bind events
-        # Selection bind
-        self.table.bind('<<TreeviewSelect>>', self.on_table_select)
-        self.table.bind('<Double-1>', self.on_table_double_click)
+        self.table.bind('<Button-3>', self.on_right_click)
 
         self.table.pack(side=tk.LEFT, fill="both", expand=True)
 
@@ -47,16 +45,19 @@ class BankAccountScreen(ttk.Frame):
         data = self.repository.get_all()
         for item in data:
             self.table.tree_view.insert(parent="",index=tk.END, iid=item.id, values=(item.id, item.iban))
-        
-    def on_table_select(self, event: Event):
-        item_id = self.table.tree_view.selection()[0]
-        values = self.table.tree_view.item(item_id, 'values')
-        print('selected: ', values)
+
+    def __identify_table_row(self, y: int) -> str:
+        return self.table.tree_view.identify_row(y)
     
-    def on_table_double_click(self, event: Event):
-        item_id = self.table.tree_view.identify_row(event.y)
+    def __edit_table_row(self, item: tuple[any, ...]):
+        data = BankAccountSchema(id=item[0], iban=item[1])
+        BankAccountFormModal(master=self, model=data)
+        self.table.tree_view.item(item[0], values=(data.id, data.iban))
+
+    def on_right_click(self, event: Event):
+        item_id = self.__identify_table_row(event.y)
         if item_id:
-            values = self.table.tree_view.item(item_id, 'values')
-            data = BankAccountSchema(id=values[0], iban=values[1])
-            BankAccountFormModal(master=self, model=data)
-            self.table.tree_view.item(item_id, values=(data.id, data.iban))
+            self.table.tree_view.selection_set([item_id])
+            selected_item = self.table.tree_view.item(item_id, 'values')
+            commands=[('Edit', lambda: self.__edit_table_row(selected_item)), ('Delete', lambda: print('delete'))]
+            widgets.ContextMenu(master=self, commands=commands).show_menu(event=event)
