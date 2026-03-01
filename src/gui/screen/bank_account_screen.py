@@ -62,6 +62,6 @@ class BankAccountScreen(ttk.Frame):
         if item_id:
             self.table.tree_view.selection_set([item_id])
             selected_item = self.table.tree_view.item(item_id, 'values')
-            commands=[('Edit', lambda: self._edit_table_row(selected_item)), ('Delete', lambda: self._delete_table_row(selected_item))]
+            commands=[('Create new bank account', lambda: BankAccountFormModal(), True), ('Edit item', lambda: self._edit_table_row(selected_item), False), ('Delete item', lambda: self._delete_table_row(selected_item), False)]
             self.contextMenu = widgets.ContextMenu(master=self, commands=commands)
             self.contextMenu.show_menu(event=event)
