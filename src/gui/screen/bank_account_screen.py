@@ -6,14 +6,6 @@ from src.models.database_schema import BankAccountSchema
 from src.repositories.bank_account_repository import BankAccountRepository
 
 
-class StartScreen(ttk.Frame):
-    def __init__(self, master):
-        super().__init__(master)
-        self.pack(fill="both", expand=True)
-        label = ttk.Label(self, text="Welcome to pyExpenses!", font=("Arial", 18))
-        label.pack(pady=20)        
-
-
 class BankAccountScreen(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)

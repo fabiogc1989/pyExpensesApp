@@ -1,6 +1,7 @@
 import tkinter as tk
 from .modal.bank_account_form_modal import BankAccountFormModal
-from .screens import StartScreen, BankAccountScreen
+from .screen.start_screen import StartScreen
+from .screen.bank_account_screen import BankAccountScreen
 
 
 class MainWindow(tk.Tk):
