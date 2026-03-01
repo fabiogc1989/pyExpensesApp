@@ -1,5 +1,5 @@
-from core.database import SessionLocal, BankAccount
-from models.database_schema import BankAccountSchema
+from src.core.database import SessionLocal, BankAccount
+from src.models.database_schema import BankAccountSchema
 from .base_repository import BaseRepository
 
 class BankAccountRepository(BaseRepository[BankAccountSchema]):

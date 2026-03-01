@@ -1,9 +1,9 @@
-from app.gui.modal.bank_account_form_modal import BankAccountFormModal
-import app.gui.widgets as widgets
+from src.gui.modal.bank_account_form_modal import BankAccountFormModal
+import src.gui.widgets as widgets
 import tkinter as tk
-from tkinter import ttk, Event
-from models.database_schema import BankAccountSchema
-from repositories.bank_account_repository import BankAccountRepository
+from tkinter import ttk, Event, messagebox
+from src.models.database_schema import BankAccountSchema
+from src.repositories.bank_account_repository import BankAccountRepository
 
 
 class StartScreen(ttk.Frame):
@@ -55,6 +55,11 @@ class BankAccountScreen(ttk.Frame):
         data = BankAccountSchema(id=item[0], iban=item[1])
         BankAccountFormModal(master=self, model=data)
         self.table.tree_view.item(item[0], values=(data.id, data.iban))
+    
+    def _delete_table_row(self, item: tuple[any, ...]):
+        if messagebox.askyesno(title='Delete Confirmation', message='Are you sure you want to delete this bank account?', icon='warning'):
+            self.repository.delete(item[0])
+            self.table.tree_view.delete(item[0])
 
     def on_right_click(self, event: Event):
         if self.contextMenu is not None:
@@ -65,6 +70,6 @@ class BankAccountScreen(ttk.Frame):
         if item_id:
             self.table.tree_view.selection_set([item_id])
             selected_item = self.table.tree_view.item(item_id, 'values')
-            commands=[('Edit', lambda: self._edit_table_row(selected_item)), ('Delete', lambda: print('delete'))]
+            commands=[('Edit', lambda: self._edit_table_row(selected_item)), ('Delete', lambda: self._delete_table_row(selected_item))]
             self.contextMenu = widgets.ContextMenu(master=self, commands=commands)
             self.contextMenu.show_menu(event=event)

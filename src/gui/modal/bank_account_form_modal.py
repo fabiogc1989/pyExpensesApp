@@ -1,6 +1,6 @@
 from tkinter import ttk
-from models.database_schema import BankAccountSchema
-from repositories.bank_account_repository import BankAccountRepository
+from src.models.database_schema import BankAccountSchema
+from src.repositories.bank_account_repository import BankAccountRepository
 
 from .form_modal import FormModal
 

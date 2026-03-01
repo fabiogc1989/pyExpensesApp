@@ -1,5 +1,5 @@
-from app.gui.main_window import MainWindow
-from core.database import init_db
+from src.gui.main_window import MainWindow
+from src.core.database import init_db
 
 
 def main():
