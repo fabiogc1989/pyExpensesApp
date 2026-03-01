@@ -15,9 +15,9 @@ class FormModal[T](BaseModal):
         self._model = model
 
     @property
-    def edit_mode(self):
+    def is_create(self):
         return self._edit_mode
     
-    @edit_mode.setter
-    def edit_mode(self, mode: Literal['create', 'edit']):
+    @is_create.setter
+    def is_create(self, mode: Literal['create', 'edit']):
         self._edit_mode = mode

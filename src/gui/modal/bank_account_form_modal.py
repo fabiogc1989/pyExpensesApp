@@ -1,4 +1,6 @@
-from tkinter import ttk
+from tkinter import messagebox, ttk
+
+from pydantic import ValidationError
 from src.models.database_schema import BankAccountSchema
 from src.repositories.bank_account_repository import BankAccountRepository
 
@@ -10,13 +12,22 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
         super().__init__(master=master)
 
         self.__repository = BankAccountRepository()
+        self.success = False
+        self.model = model
 
         # Modal's properties
-        self.edit_mode = 'create' if model is None or model.id is None or model.id == 0 else 'edit'
-        self.title('Create Bank Account') if self.edit_mode == 'create' else self.title('Edit Bank Account')
-        self.model = model
+        is_create = self.model is None
+        self.edit_mode = 'create' if is_create else 'edit'
+        self.title('Create Bank Account' if is_create else 'Edit Bank Account')
         
         # Design the modal
+        self._setup_ui()
+
+        self.focus_set() # Focus on this window
+        self.wait_window()  # Wait until it's closed
+    
+    def _setup_ui(self):
+        """Organize the interface construction to keep __init__ clean."""
         self.__main_frame = ttk.Frame(master=self, padding=10)
         self.__main_frame.grid(row=0, column=0, sticky='nsew')
 
@@ -34,14 +45,29 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
         self.cancelButton = ttk.Button(master=self.__main_frame, text="Cancel", command=self.destroy)
         self.cancelButton.grid(row=1, column=2, sticky='ew', pady=10, padx=2)
 
-        self.focus_set() # Focus on this window
-        self.wait_window()  # Wait until it's closed
-
     def on_submit(self):
-        if self.edit_mode == 'create':
-            self.model = BankAccountSchema(iban=self.ibanEntry.get())
-            self.__repository.insert(self.model)
-        else:
-            self.model.iban = self.ibanEntry.get()
-            self.__repository.update(self.model)
-        self.destroy()
+        try:
+            id = self.model.id if self.model is not None else None
+            iban_value = self.ibanEntry.get().strip() # Collect IBAN from entry and remove extra spaces
+
+            # Update or create the model using Pydantic for validation
+            if self.edit_mode == 'create':
+                # Create a new schema.
+                # Note: debits and credits start as empty lists by default in your Schema
+                self.model = BankAccountSchema(iban=iban_value)
+                self.__repository.insert(self.model)
+            else:
+                # In edit mode, validate only the changed field
+                # Pydantic will validate via @field_validator('iban')
+                self.model = BankAccountSchema(id=id, iban=iban_value)
+                self.__repository.update(self.model)
+
+            self.success = True
+            self.destroy()
+        except ValidationError as e:
+            # Capture Pydantic errors (e.g. empty IBAN or negative ID)
+            errors = '\n'.join(f'- {err["msg"]}' for err in e.errors())
+            messagebox.showerror('Validation Error', f'Please fix the following:\n{errors}')
+        except Exception as e:
+            # Capture database errors or other unexpected issues
+            messagebox.showerror("Exception", f"An unexpected error occurred:\n{str(e)}")
