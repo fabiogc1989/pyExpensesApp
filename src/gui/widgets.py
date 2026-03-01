@@ -1,4 +1,4 @@
-from typing import Callable, Literal, List
+from typing import Callable, Literal, List, Tuple
 import tkinter as tk
 from tkinter import Event, ttk
 
@@ -29,11 +29,13 @@ class ScrollableTreeView(tk.Frame):
 
 
 class ContextMenu(tk.Menu):
-    def __init__(self, commands: List[tuple[str, callable]], master = None,):
+    def __init__(self, commands: List[Tuple[str, Callable, bool]], master = None,):
         super().__init__(master, tearoff=0)
 
-        for label, command in commands:
+        for label, command, separator in commands:
             self.add_command(label=label, command=command)
+            if separator:
+                self.add_separator()
         
     def show_menu(self, event):
         try:
