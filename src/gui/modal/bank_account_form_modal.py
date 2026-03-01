@@ -59,7 +59,7 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
             else:
                 # In edit mode, validate only the changed field
                 # Pydantic will validate via @field_validator('iban')
-                self.model = BankAccountSchema(id=id, iban=iban_value)
+                self.model.iban = iban_value
                 self.__repository.update(self.model)
 
             self.success = True
