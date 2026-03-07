@@ -35,6 +35,17 @@ class MainWindow(tk.Tk):
         bank_account_menu.add_command(label='Add Account', command=lambda: BankAccountFormModal())
         bank_account_menu.add_command(label='View Accounts', command=lambda: self.show_screen(BankAccountScreen))
 
+        # Transaction Menu
+        transaction_menu = tk.Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label='Transaction', menu=transaction_menu)
+        
+        transaction_add_menu = tk.Menu(transaction_menu, tearoff=0)
+        transaction_add_menu.add_command(label='Debit', command=lambda: print("Add Debit clicked"))
+        transaction_add_menu.add_command(label='Credit', command=lambda: print("Add Credit clicked"))
+
+        transaction_menu.add_cascade(label='Add', menu=transaction_add_menu)
+        transaction_menu.add_command(label='View Transactions', command=lambda: print("View Transactions clicked"))
+
         # Help menu
         help_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Help", menu=help_menu)
