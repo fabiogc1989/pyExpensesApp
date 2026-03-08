@@ -1,6 +1,7 @@
 from tkinter import messagebox, ttk
 
 from pydantic import ValidationError
+from src.core.di import ioc
 from src.models.database_schema import BankAccountSchema
 from src.repositories.bank_account_repository import BankAccountRepository
 
@@ -8,10 +9,11 @@ from .form_modal import FormModal
 
 
 class BankAccountFormModal(FormModal[BankAccountSchema]):
-    def __init__(self, master = None, model: BankAccountSchema = None):
+    @ioc.inject
+    def __init__(self, repo: BankAccountRepository, master = None, model: BankAccountSchema = None):
         super().__init__(master=master)
 
-        self.__repository = BankAccountRepository()
+        self.__repository = repo
         self.success = False
         self.model = model
 
