@@ -1,3 +1,4 @@
+from src.core.di import ioc
 from src.gui.modal.bank_account_form_modal import BankAccountFormModal
 import src.gui.widgets as widgets
 import tkinter as tk
@@ -7,9 +8,10 @@ from src.repositories.bank_account_repository import BankAccountRepository
 
 
 class BankAccountScreen(ttk.Frame):
-    def __init__(self, master):
+    @ioc.inject
+    def __init__(self, master, repo: BankAccountRepository):
         super().__init__(master)
-        self.repository = BankAccountRepository()
+        self.repository = repo
         self.pack(fill="both", expand=True)
         
         search_frame = ttk.Frame(master=self)

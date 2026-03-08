@@ -1,7 +1,10 @@
 from src.core.database import SessionLocal, BankAccount
 from src.models.database_schema import BankAccountSchema
+from src.core.di import ioc
 from .base_repository import BaseRepository
 
+
+@ioc.register
 class BankAccountRepository(BaseRepository[BankAccountSchema]):
     def get_all(self) -> list[BankAccountSchema]|iter[BankAccountSchema]:
         try:
