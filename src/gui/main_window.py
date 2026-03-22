@@ -1,4 +1,8 @@
 import tkinter as tk
+
+from src.gui.screen.add_transaction_screen import AddTransactionScreen
+from src.models.transaction_type import TransactionType
+from src.models.transaction_type import TransactionType
 from .modal.bank_account_form_modal import BankAccountFormModal
 from .screen.start_screen import StartScreen
 from .screen.bank_account_screen import BankAccountScreen
@@ -40,8 +44,8 @@ class MainWindow(tk.Tk):
         menu_bar.add_cascade(label='Transaction', menu=transaction_menu)
         
         transaction_add_menu = tk.Menu(transaction_menu, tearoff=0)
-        transaction_add_menu.add_command(label='Debit', command=lambda: print("Add Debit clicked"))
-        transaction_add_menu.add_command(label='Credit', command=lambda: print("Add Credit clicked"))
+        transaction_add_menu.add_command(label='Debit', command=lambda: self.show_screen(AddTransactionScreen, transaction_type=TransactionType.DEBIT))
+        transaction_add_menu.add_command(label='Credit', command=lambda: self.show_screen(AddTransactionScreen, transaction_type=TransactionType.CREDIT))
 
         transaction_menu.add_cascade(label='Add', menu=transaction_add_menu)
         transaction_menu.add_command(label='View Transactions', command=lambda: print("View Transactions clicked"))
@@ -51,8 +55,8 @@ class MainWindow(tk.Tk):
         menu_bar.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="About", command=lambda: self.show_screen(StartScreen))
     
-    def show_screen(self, screen_class):
+    def show_screen(self, screen_class, *args, **kwargs):
         if self._current_screen is not None:
             self._current_screen.destroy()
-        self._current_screen = screen_class(self.container)
+        self._current_screen = screen_class(self.container, *args, **kwargs)
         self._current_screen.tkraise() # Bring the selected screen to the front
