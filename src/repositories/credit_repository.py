@@ -1,8 +1,9 @@
-from core.database import SessionLocal, Credit
-from models.database_schema import CreditSchema
-from repositories.base_repository import BaseRepository
+from src.core.database import SessionLocal, Credit
+from src.models.database_schema import CreditSchema
+from src.repositories.base_repository import BaseRepository
+from src.core.di import ioc
 
-
+@ioc.register
 class CreditRepository(BaseRepository[CreditSchema]):
     def get_all(self) -> list[CreditSchema]|iter[CreditSchema]:
         try:

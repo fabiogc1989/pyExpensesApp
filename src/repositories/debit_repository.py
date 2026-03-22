@@ -1,8 +1,9 @@
-from core.database import SessionLocal, Debit
-from models.database_schema import DebitSchema
-from repositories.base_repository import BaseRepository
+from src.core.database import SessionLocal, Debit
+from src.models.database_schema import DebitSchema
+from src.repositories.base_repository import BaseRepository
+from src.core.di import ioc
 
-
+@ioc.register
 class DebitRepository(BaseRepository[DebitSchema]):
     def get_all(self) -> list[DebitSchema]|iter[DebitSchema]:
         try:
