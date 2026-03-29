@@ -1,9 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText
+from pydantic import ValidationError
 from tkcalendar import DateEntry
 
 from src.core.di import ioc
+from src.models.database_schema import CreditSchema, DebitSchema
 from src.models.transaction_type import TransactionType
 from src.repositories.bank_account_repository import BankAccountRepository
 from src.repositories.credit_repository import CreditRepository
@@ -36,6 +39,7 @@ class AddTransactionScreen(ttk.Frame):
         bank_account_label.grid(row=0, column=0, sticky=tk.EW, columnspan=12)
         self.bank_account_combobox = ttk.Combobox(self, state="readonly")
         self.bank_account_combobox.grid(row=1, column=0, sticky=tk.EW, columnspan=12, pady=10)
+        self._load_bank_accounts()
 
         # Configurar os widgets para amount e date
         amount_label = ttk.Label(self, text="Amount")
@@ -57,10 +61,44 @@ class AddTransactionScreen(ttk.Frame):
         self.description_entry.grid(row=5, column=0, sticky=tk.EW, columnspan=12, pady=10)
 
         # Configurar o botão de salvar
-        save_button = ttk.Button(self, text="Save")
+        save_button = ttk.Button(self, text="Save", command=self.on_submit)
         save_button.grid(row=6, column=11, sticky=tk.EW)
+    
+    def _load_bank_accounts(self):
+        try:
+            self._bank_accounts = self.bank_account_repo.get_all()
+            
+            # Preencher o Combobox apenas com os IBANs
+            self.bank_account_combobox['values'] = [account.iban for account in self._bank_accounts]
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load bank accounts:\n{str(e)}")
 
     def _validate_amount_entry(self, P):
         if P == "" or P.replace(".", "", 1).isdigit():
             return True
         return False
+    
+    def on_submit(self):
+        try:
+            # Criar a transação usando os repositórios
+            selected_iban = self.bank_account_combobox.get()
+            bank_account = next((acct for acct in self._bank_accounts if acct.iban == selected_iban), None)
+            amount = float(self.amount_entry.get())
+            date = self.date_entry.get_date()
+            description = self.description_entry.get(1.0, tk.END).strip()
+
+            if self.transaction_type == TransactionType.DEBIT:
+                entity = DebitSchema(description=description, amount=amount, date=date, bank_account_id=bank_account.id)
+                self.debit_repo.insert(entity)
+            else:
+                entity = CreditSchema(description=description, amount=amount, date=date, bank_account=bank_account)
+                self.credit_repo.insert(entity)
+
+            messagebox.showinfo("Success", f"{self.transaction_type.name.capitalize()} transaction added successfully!")
+        except ValidationError as e:
+            # Capture Pydantic errors (e.g. empty IBAN or negative ID)
+            errors = '\n'.join(f'- {err["msg"]}' for err in e.errors())
+            messagebox.showerror('Validation Error', f'Please fix the following:\n{errors}')
+        except Exception as e:
+            # Capture database errors or other unexpected issues
+            messagebox.showerror("Exception", f"An unexpected error occurred:\n{str(e)}")

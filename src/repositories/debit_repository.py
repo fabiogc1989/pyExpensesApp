@@ -48,5 +48,6 @@ class DebitRepository(BaseRepository[DebitSchema]):
                 session.add(db_debit)
                 session.commit()
             return True
-        except:
+        except Exception as e:
+            print(f"Error occurred while inserting debit: {e}")
             return False

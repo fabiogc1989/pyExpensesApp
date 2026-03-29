@@ -49,7 +49,6 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
 
     def on_submit(self):
         try:
-            id = self.model.id if self.model is not None else None
             iban_value = self.ibanEntry.get().strip() # Collect IBAN from entry and remove extra spaces
 
             # Update or create the model using Pydantic for validation

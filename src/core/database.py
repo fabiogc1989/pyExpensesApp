@@ -40,7 +40,7 @@ class Credit(Base):
     date: Mapped[date] = mapped_column(Date, nullable=False, server_default=func.now())
     
     bank_account_id: Mapped[int] = mapped_column(ForeignKey('bank_account.id'), nullable=False)
-    bank_account: Mapped['BankAccount'] = relationship('BankAccount', back_populates='credits')
+    bank_account: Mapped[BankAccount] = relationship('BankAccount', back_populates='credits')
 
 
 class Debit(Base):
