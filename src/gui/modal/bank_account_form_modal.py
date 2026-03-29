@@ -2,8 +2,8 @@ from tkinter import messagebox, ttk
 
 from pydantic import ValidationError
 from src.core.di import ioc
-from src.models.database_schema import BankAccountSchema
-from src.repositories.bank_account_repository import BankAccountRepository
+from src.model.database_schema import BankAccountSchema
+from src.repository.bank_account_repository import BankAccountRepository
 
 from .form_modal import FormModal
 

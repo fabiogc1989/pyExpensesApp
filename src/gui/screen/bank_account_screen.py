@@ -3,8 +3,8 @@ from src.gui.modal.bank_account_form_modal import BankAccountFormModal
 import src.gui.widgets as widgets
 import tkinter as tk
 from tkinter import ttk, Event, messagebox
-from src.models.database_schema import BankAccountSchema
-from src.repositories.bank_account_repository import BankAccountRepository
+from src.model.database_schema import BankAccountSchema
+from src.repository.bank_account_repository import BankAccountRepository
 
 
 class BankAccountScreen(ttk.Frame):

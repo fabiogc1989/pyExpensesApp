@@ -6,11 +6,11 @@ from pydantic import ValidationError
 from tkcalendar import DateEntry
 
 from src.core.di import ioc
-from src.models.database_schema import CreditSchema, DebitSchema
-from src.models.transaction_type import TransactionType
-from src.repositories.bank_account_repository import BankAccountRepository
-from src.repositories.credit_repository import CreditRepository
-from src.repositories.debit_repository import DebitRepository
+from src.model.database_schema import CreditSchema, DebitSchema
+from src.model.transaction_type import TransactionType
+from src.repository.bank_account_repository import BankAccountRepository
+from src.repository.credit_repository import CreditRepository
+from src.repository.debit_repository import DebitRepository
 
 
 class AddTransactionScreen(ttk.Frame):

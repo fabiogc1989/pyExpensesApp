@@ -1,6 +1,7 @@
 from src.core.database import SessionLocal, Debit
-from src.models.database_schema import DebitSchema
-from src.repositories.base_repository import BaseRepository
+from src.exception.repository_exception import RepositoryException
+from src.model.database_schema import DebitSchema
+from src.repository.base_repository import BaseRepository
 from src.core.di import ioc
 
 @ioc.register
@@ -10,44 +11,42 @@ class DebitRepository(BaseRepository[DebitSchema]):
             with SessionLocal() as session:
                 entities = session.query(Debit).all()
             return [DebitSchema.model_validate(entity) for entity in entities]
-        except:
-            return []
+        except Exception as e:
+            raise RepositoryException(f"Error fetching all debits: {str(e)}")
 
     def get(self, id: int) -> DebitSchema:
         try:
             with SessionLocal() as session:
                 entity = session.get(Debit, id)
-            return DebitSchema.model_validate(entity) if entity else None
-        except:
-            return None
+            if entity is None:
+                raise RepositoryException(f"Debit with ID {id} not found")
+            return DebitSchema.model_validate(entity)
+        except Exception as e:
+            raise RepositoryException(f"Error fetching debit with ID {id}: {str(e)}")
 
-    def delete(self, entity: DebitSchema) -> bool:
+    def delete(self, entity: DebitSchema) -> None:
         try:
             with SessionLocal() as session:
                 db_debit = Debit(**entity.model_dump())
                 session.delete(db_debit)
                 session.commit()
-            return True
-        except:
-            return False
+        except Exception as e:
+            raise RepositoryException(f"Error deleting debit with ID {entity.id}: {str(e)}")
 
-    def update(self, entity: DebitSchema) -> bool:
+    def update(self, entity: DebitSchema) -> None:
         try:
             with SessionLocal() as session:
                 db_debit = Debit(**entity.model_dump())
                 session.merge(db_debit)
                 session.commit()
-            return True
-        except:
-            return False
-    
-    def insert(self, entity: DebitSchema) -> bool:
+        except Exception as e:
+            raise RepositoryException(f"Error updating debit with ID {entity.id}: {str(e)}")
+
+    def insert(self, entity: DebitSchema) -> None:
         try:
             with SessionLocal() as session:
                 db_debit = Debit(**entity.model_dump())
                 session.add(db_debit)
                 session.commit()
-            return True
         except Exception as e:
-            print(f"Error occurred while inserting debit: {e}")
-            return False
+            raise RepositoryException(f"Error inserting debit with ID {entity.id}: {str(e)}")

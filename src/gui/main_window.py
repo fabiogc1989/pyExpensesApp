@@ -1,8 +1,8 @@
 import tkinter as tk
 
 from src.gui.screen.add_transaction_screen import AddTransactionScreen
-from src.models.transaction_type import TransactionType
-from src.models.transaction_type import TransactionType
+from src.model.transaction_type import TransactionType
+from src.model.transaction_type import TransactionType
 from .modal.bank_account_form_modal import BankAccountFormModal
 from .screen.start_screen import StartScreen
 from .screen.bank_account_screen import BankAccountScreen

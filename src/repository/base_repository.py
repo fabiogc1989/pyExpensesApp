@@ -35,40 +35,34 @@ class BaseRepository[T](ABC):
         ...
 
     @abstractmethod
-    def delete(self, id: int) -> bool:
+    def delete(self, id: int) -> None:
         """
         Remove a record of the entity from the database.
         
         :param self: The repository instance (the current object on which the method is called).
         :param id: The ID of the entity to delete.
         :type id: int
-        :return: True if the entity was deleted, False otherwise.
-        :rtype: bool
         """
         ...
 
     @abstractmethod
-    def update(self, entity: T) -> bool:
+    def update(self, entity: T) -> None:
         """
         Docstring for update
         
         :param self: The repository instance (the current object on which the method is called).
         :param entity: The entity to update
         :type entity: T
-        :return: True if the entity was updated, False otherwise
-        :rtype: bool
         """
         ...
 
     @abstractmethod
-    def insert(self, entity: T) -> bool:
+    def insert(self, entity: T) -> None:
         """
         Docstring for insert
         
         :param self: The repository instance (the current object on which the method is called).
         :param entity: The new entity to insert
         :type entity: T
-        :return: True if the new entity was inserted, False otherwise
-        :rtype: bool
         """
         ...
