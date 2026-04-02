@@ -92,7 +92,7 @@ class AddTransactionScreen(ttk.Frame):
                 entity = DebitSchema(description=description, amount=amount, date=date, bank_account_id=bank_account.id)
                 self.debit_repo.insert(entity)
             else:
-                entity = CreditSchema(description=description, amount=amount, date=date, bank_account=bank_account)
+                entity = CreditSchema(description=description, amount=amount, date=date, bank_account_id=bank_account.id)
                 self.credit_repo.insert(entity)
 
             messagebox.showinfo("Success", f"{self.transaction_type.name.capitalize()} transaction added successfully!")
