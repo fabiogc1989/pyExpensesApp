@@ -1,6 +1,7 @@
 from src.core.di import ioc
 from src.gui.modal.bank_account_form_modal import BankAccountFormModal
-import src.gui.widgets as widgets
+from src.gui.widget.scrollable_tree_view import ScrollableTreeView
+from src.gui.widget.context_menu import ContextMenu
 import tkinter as tk
 from tkinter import ttk, Event, messagebox
 from src.model.database_schema import BankAccountSchema
@@ -23,7 +24,7 @@ class BankAccountScreen(ttk.Frame):
         
         # Define columns
         columns = ("id","iban")
-        self.table = widgets.ScrollableTreeView(self, columns=columns, show="headings", selectmode= "browse")
+        self.table = ScrollableTreeView(self, columns=columns, show="headings", selectmode= "browse")
         
         # Bind events
         self.table.bind('<Button-3>', self.on_right_click)
@@ -65,5 +66,5 @@ class BankAccountScreen(ttk.Frame):
             self.table.tree_view.selection_set([item_id])
             selected_item = self.table.tree_view.item(item_id, 'values')
             commands=[('Create new bank account', lambda: BankAccountFormModal(), True), ('Edit item', lambda: self._edit_table_row(selected_item), False), ('Delete item', lambda: self._delete_table_row(selected_item), False)]
-            self.contextMenu = widgets.ContextMenu(master=self, commands=commands)
+            self.contextMenu = ContextMenu(master=self, commands=commands)
             self.contextMenu.show_menu(event=event)
