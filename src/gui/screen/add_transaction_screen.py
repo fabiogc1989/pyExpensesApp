@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from tkcalendar import DateEntry
 
 from src.core.di import ioc
+from src.exception.repository_exception import RepositoryException
 from src.model.database_schema import CreditSchema, DebitSchema
 from src.model.transaction_type import TransactionType
 from src.repository.bank_account_repository import BankAccountRepository
@@ -95,6 +96,9 @@ class AddTransactionScreen(ttk.Frame):
                 self.credit_repo.insert(entity)
 
             messagebox.showinfo("Success", f"{self.transaction_type.name.capitalize()} transaction added successfully!")
+        except RepositoryException as e:
+            # Capture repository-specific errors (e.g. database connection issues)
+            messagebox.showerror("Repository Error", f"Failed to save transaction:\n{str(e)}")
         except ValidationError as e:
             # Capture Pydantic errors (e.g. empty IBAN or negative ID)
             errors = '\n'.join(f'- {err["msg"]}' for err in e.errors())

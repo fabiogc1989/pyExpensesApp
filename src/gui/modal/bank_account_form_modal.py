@@ -2,6 +2,7 @@ from tkinter import messagebox, ttk
 
 from pydantic import ValidationError
 from src.core.di import ioc
+from src.exception.repository_exception import RepositoryException
 from src.model.database_schema import BankAccountSchema
 from src.repository.bank_account_repository import BankAccountRepository
 
@@ -65,6 +66,9 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
 
             self.success = True
             self.destroy()
+        except RepositoryException as e:
+            # Capture repository-specific errors (e.g. duplicate IBAN)
+            messagebox.showerror("Repository Error", f"An error occurred while saving:\n{str(e)}")
         except ValidationError as e:
             # Capture Pydantic errors (e.g. empty IBAN or negative ID)
             errors = '\n'.join(f'- {err["msg"]}' for err in e.errors())
