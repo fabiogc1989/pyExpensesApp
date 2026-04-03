@@ -30,6 +30,30 @@ class LazyProxy:
         return getattr(self._get_real_instance(), name)
 
 
+class Inject:
+    def __init__(self, cls: Type, name: str = 'default'):
+        self.target_cls = cls
+        self.target_name = name
+        self.attr_name = None # Será preenchido pelo Python em __set_name__
+
+    def __set_name__(self, owner, name):
+        # O Python chama isso automaticamente para saber o nome da variável
+        self.attr_name = name
+    
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        
+        # Resolve a instância real através do container global (ou proxy)
+        # Aqui usamos o LazyProxy para manter a consistência do seu código original
+        proxy = LazyProxy(ioc, self.target_cls, self.target_name)
+
+        # Opcional: Cache do proxy na instância para evitar recriação do objeto Proxy
+        value = proxy._get_real_instance()
+        setattr(instance, self.attr_name, value)
+        return value
+
+
 class Container:
     def __init__(self):
         self._registry = {} # Stores the class/factory
@@ -50,33 +74,6 @@ class Container:
             # We create the instance only when the Proxy asks for it
             self._instances[(cls, name)] = self._registry[(cls, name)]()
         return self._instances[(cls, name)]
-
-    def inject(self,func):
-            """Decorator to inject dependencies via type hints."""
-            @functools.wraps(func)
-            def wrapper(*args, **kwargs):
-                sig = inspect.signature(func)
-                bound_args = sig.bind_partial(*args, **kwargs)
-
-                for name, param in sig.parameters.items():
-                    if name in bound_args.arguments: continue # Skip if already provided
-
-                    # Extract type and name from Annotated
-                    annotation = param.annotation
-                    target_cls, target_name = annotation, 'default'
-
-                    if get_origin(annotation) is Annotated:
-                       args_cls = get_args(annotation)
-                       target_cls = args_cls[0]
-                       meta = args_cls[1]
-                       if isinstance(meta, Dependency):
-                           target_name = meta.name
-                        
-                    if (target_cls, target_name) in self._registry:
-                        kwargs[name] = LazyProxy(self, target_cls, target_name)
-
-                return func(*args, **kwargs)
-            return wrapper
 
 
 # Initialize our global container

@@ -1,4 +1,4 @@
-from src.core.di import ioc
+from src.core.di import Inject, ioc
 from src.gui.modal.bank_account_form_modal import BankAccountFormModal
 from src.gui.widget.scrollable_tree_view import ScrollableTreeView
 from src.gui.widget.context_menu import ContextMenu
@@ -9,10 +9,10 @@ from src.repository.bank_account_repository import BankAccountRepository
 
 
 class BankAccountScreen(ttk.Frame):
-    @ioc.inject
-    def __init__(self, master, repo: BankAccountRepository):
+    repository = Inject(BankAccountRepository)
+
+    def __init__(self, master):
         super().__init__(master)
-        self.repository = repo
         self.pack(fill="both", expand=True)
         
         search_frame = ttk.Frame(master=self)

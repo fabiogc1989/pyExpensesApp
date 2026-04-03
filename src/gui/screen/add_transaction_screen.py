@@ -5,7 +5,7 @@ from tkinter.scrolledtext import ScrolledText
 from pydantic import ValidationError
 from tkcalendar import DateEntry
 
-from src.core.di import ioc
+from src.core.di import Inject, ioc
 from src.exception.repository_exception import RepositoryException
 from src.model.database_schema import CreditSchema, DebitSchema
 from src.model.transaction_type import TransactionType
@@ -15,15 +15,15 @@ from src.repository.debit_repository import DebitRepository
 
 
 class AddTransactionScreen(ttk.Frame):
-    @ioc.inject
-    def __init__(self, master, transaction_type: TransactionType, bank_account_repo: BankAccountRepository, debit_repo: DebitRepository, credit_repo: CreditRepository):
+    bank_account_repo = Inject(BankAccountRepository)
+    debit_repo = Inject(DebitRepository)
+    credit_repo = Inject(CreditRepository)
+    
+    def __init__(self, master, transaction_type: TransactionType):
         super().__init__(master)
 
         self.transaction_type = transaction_type
         print(f"Initializing AddTransactionScreen for {self.transaction_type.name}")
-        self.bank_account_repo = bank_account_repo
-        self.debit_repo = debit_repo
-        self.credit_repo = credit_repo
 
         self.pack(fill="both", expand=True, padx=10, pady=10)
         # 1. Configurar as proporções das linhas e colunas (Grid 12x12)
