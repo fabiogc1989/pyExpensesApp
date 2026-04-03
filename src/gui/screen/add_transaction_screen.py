@@ -1,13 +1,15 @@
+from abc import abstractmethod, ABC
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText
+from typing import override
 from pydantic import ValidationError
 from tkcalendar import DateEntry
 
 from src.core.di import Inject, ioc
 from src.exception.repository_exception import RepositoryException
-from src.model.database_schema import CreditSchema, DebitSchema
+from src.model.design_pattern.behavioral_pattern.strategy.transaction_strategy import CreditStrategy, DebitStrategy, TransactionScreenContext
 from src.model.transaction_type import TransactionType
 from src.repository.bank_account_repository import BankAccountRepository
 from src.repository.credit_repository import CreditRepository
@@ -22,8 +24,9 @@ class AddTransactionScreen(ttk.Frame):
     def __init__(self, master, transaction_type: TransactionType):
         super().__init__(master)
 
-        self.transaction_type = transaction_type
-        print(f"Initializing AddTransactionScreen for {self.transaction_type.name}")
+        self.transaction_context = TransactionScreenContext()
+        self.transaction_context.set_strategy(DebitStrategy() if transaction_type == TransactionType.DEBIT else CreditStrategy())
+        print(f"Initializing AddTransactionScreen for {transaction_type.name}")
 
         self.pack(fill="both", expand=True, padx=10, pady=10)
         # 1. Configurar as proporções das linhas e colunas (Grid 12x12)
@@ -88,14 +91,14 @@ class AddTransactionScreen(ttk.Frame):
             date = self.date_entry.get_date()
             description = self.description_entry.get(1.0, tk.END).strip()
 
-            if self.transaction_type == TransactionType.DEBIT:
-                entity = DebitSchema(description=description, amount=amount, date=date, bank_account_id=bank_account.id)
-                self.debit_repo.insert(entity)
-            else:
-                entity = CreditSchema(description=description, amount=amount, date=date, bank_account_id=bank_account.id)
-                self.credit_repo.insert(entity)
-
-            messagebox.showinfo("Success", f"{self.transaction_type.name.capitalize()} transaction added successfully!")
+            data = {
+                "description": description,
+                "amount": amount,
+                "date": date,
+                "bank_account_id": bank_account.id
+            }
+            self.transaction_context.save(data)
+            messagebox.showinfo("Success", f"Transaction added successfully!")
         except RepositoryException as e:
             # Capture repository-specific errors (e.g. database connection issues)
             messagebox.showerror("Repository Error", f"Failed to save transaction:\n{str(e)}")
