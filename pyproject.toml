@@ -13,9 +13,12 @@ dependencies = [
 [tool.uv]
 package = true
 
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
-my-app = "pyexpensesapp.main:main"
+my-app = "src.main:main"
