@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from src.gui.screen.add_transaction_screen import AddTransactionScreen
+from src.model.design_pattern.creational_pattern.menu_builder import MenuBuilder
 from src.model.transaction_type import TransactionType
 from src.model.transaction_type import TransactionType
 from src.util.gui import change_screen
@@ -16,7 +17,37 @@ class MainWindow(tk.Tk):
         # self.geometry('800x600')
 
         self._setup_widgets()
+        
+    def _setup_widgets(self):
+        menu_builder = MenuBuilder(self)
 
+        # Add File menu
+        menu_builder\
+            .add_main_menu('File')
+        
+        # Add Bank Account menu
+        menu_builder\
+            .add_main_menu('Bank Account')\
+                .add_item('Add Account', command=lambda: BankAccountFormModal())\
+                .add_item('View Accounts', command=lambda: change_screen(self, BankAccountScreen(self.container)))
+        
+        # Add Transaction menu
+        menu_builder\
+            .add_main_menu('Transaction')\
+                .add_sub_menu('Add')\
+                    .add_item('Debit', command=lambda: change_screen(self, AddTransactionScreen(self.container, transaction_type=TransactionType.DEBIT)))\
+                    .add_item('Credit', command=lambda: change_screen(self, AddTransactionScreen(self.container, transaction_type=TransactionType.CREDIT)))\
+                .back()\
+                .add_item('View Transactions', command=lambda: print("View Transactions clicked"))
+        
+        # Add Help menu
+        menu_builder\
+            .add_main_menu('Help')\
+                .add_item('About', command=lambda: change_screen(self, StartScreen(self.container)))
+        
+        # Build the menu
+        menu_builder.build()
+        
         # Container for screens
         self.container = tk.Frame(self)
         self.container.pack(fill="both", expand=True)
@@ -24,34 +55,3 @@ class MainWindow(tk.Tk):
         # Initialize screens
         self._current_screen = None        
         change_screen(self, StartScreen(self.container))
-        
-    def _setup_widgets(self):
-        # Create menu bar
-        menu_bar = tk.Menu(master=self)
-        self.config(menu=menu_bar)
-
-        # File menu
-        file_menu = tk.Menu(menu_bar, tearoff=0)
-        menu_bar.add_cascade(label='File', menu=file_menu)
-
-        # Bank Account Menu
-        bank_account_menu = tk.Menu(menu_bar, tearoff=0)
-        menu_bar.add_cascade(label="Bank Account", menu=bank_account_menu)
-        bank_account_menu.add_command(label='Add Account', command=lambda: BankAccountFormModal())
-        bank_account_menu.add_command(label='View Accounts', command=lambda: change_screen(self, BankAccountScreen(self.container)))
-
-        # Transaction Menu
-        transaction_menu = tk.Menu(menu_bar, tearoff=0)
-        menu_bar.add_cascade(label='Transaction', menu=transaction_menu)
-        
-        transaction_add_menu = tk.Menu(transaction_menu, tearoff=0)
-        transaction_add_menu.add_command(label='Debit', command=lambda: change_screen(self, AddTransactionScreen(self.container, transaction_type=TransactionType.DEBIT)))
-        transaction_add_menu.add_command(label='Credit', command=lambda: change_screen(self, AddTransactionScreen(self.container, transaction_type=TransactionType.CREDIT)))
-
-        transaction_menu.add_cascade(label='Add', menu=transaction_add_menu)
-        transaction_menu.add_command(label='View Transactions', command=lambda: print("View Transactions clicked"))
-
-        # Help menu
-        help_menu = tk.Menu(menu_bar, tearoff=0)
-        menu_bar.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="About", command=lambda: change_screen(self, StartScreen))

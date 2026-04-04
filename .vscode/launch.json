@@ -8,7 +8,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "/home/fabio/Projects/pyExpensesApp/main.py",
+            "program": "/home/fabio/Projects/pyExpensesApp/src/main.py",
             "console": "integratedTerminal"
         }
     ]
