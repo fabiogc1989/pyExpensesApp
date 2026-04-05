@@ -1,6 +1,6 @@
 from datetime import date
 from typing import List
-from sqlalchemy import create_engine, String, Date, ForeignKey, func
+from sqlalchemy import create_engine, String, Date, ForeignKey, func, DDL, event
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -53,6 +53,37 @@ class Debit(Base):
     
     bank_account_id: Mapped[int] = mapped_column(ForeignKey('bank_account.id'), nullable=False)
     bank_account: Mapped[BankAccount] = relationship('BankAccount', back_populates='debits')
+
+
+class TransactionView(Base):
+    __tablename__ = 'v_transactions'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    description: Mapped[str]
+    amount: Mapped[float]
+    date: Mapped[date]
+    type: Mapped[str]
+    bank_account_id: Mapped[int] = mapped_column(ForeignKey('bank_account.id'), nullable=False)
+    bank_account: Mapped[BankAccount] = relationship(
+        'BankAccount',
+        primaryjoin='TransactionView.bank_account_id == BankAccount.id',
+        foreign_keys=[bank_account_id],
+        viewonly=True
+    )
+
+
+create_view_ddl = DDL("""
+CREATE VIEW IF NOT EXISTS v_transactions AS
+SELECT id, description, amount, DATE, bank_account_id, 'DEBIT' AS type
+FROM debit
+UNION ALL
+SELECT id, description, amount, DATE, bank_account_id, 'CREDIT' AS type
+FROM credit
+""")
+
+event.listen(Base.metadata, 'after_create', create_view_ddl)
+
+event.listen(Base.metadata, 'before_drop', DDL("DROP VIEW IF EXISTS v_transactions"))
 
 
 # 5. Create the database tables
