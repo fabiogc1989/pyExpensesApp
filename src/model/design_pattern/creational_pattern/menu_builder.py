@@ -1,5 +1,13 @@
 from tkinter import Menu
 
+from src.gui.modal.bank_account_form_modal import BankAccountFormModal
+from src.gui.screen.add_transaction_screen import AddTransactionScreen
+from src.gui.screen.bank_account_screen import BankAccountScreen
+from src.gui.screen.start_screen import StartScreen
+from src.model.transaction_type import TransactionType
+from src.util.gui import change_screen
+
+
 class MenuBuilder:
     def __init__(self, root):
         self.root = root
@@ -38,3 +46,43 @@ class MenuBuilder:
     def build(self):
         self.root.config(menu=self.menu_bar)
         return self.menu_bar
+
+
+class MenuDirector:
+    def __init__(self, builder: MenuBuilder):
+        self._builder = builder
+    
+    @property
+    def menu(self):
+        return self._builder
+    
+    @menu.setter
+    def menu(self, builder):
+        self._builder = builder
+
+    def build_app_menu(self, master):
+        # Add File menu
+        self._builder\
+            .add_main_menu('File')
+        
+        # Add Bank Account menu
+        self._builder\
+            .add_main_menu('Bank Account')\
+                .add_item('Add Account', command=lambda: BankAccountFormModal())\
+                .add_item('View Accounts', command=lambda: change_screen(master, BankAccountScreen(master.container)))
+        
+        # Add Transaction menu
+        self._builder\
+            .add_main_menu('Transaction')\
+                .add_sub_menu('Add')\
+                    .add_item('Debit', command=lambda: change_screen(master, AddTransactionScreen(master.container, transaction_type=TransactionType.DEBIT)))\
+                    .add_item('Credit', command=lambda: change_screen(master, AddTransactionScreen(master.container, transaction_type=TransactionType.CREDIT)))\
+                .back()\
+                .add_item('View Transactions', command=lambda: print("View Transactions clicked"))
+        
+        # Add Help menu
+        self._builder\
+            .add_main_menu('Help')\
+                .add_item('About', command=lambda: change_screen(master, StartScreen(master.container)))
+        
+        return self.menu.build()
