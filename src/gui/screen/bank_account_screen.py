@@ -1,10 +1,10 @@
-from src.core.di import Inject, ioc
+from src.core.di import Inject
 from src.gui.modal.bank_account_form_modal import BankAccountFormModal
-from src.gui.widget.scrollable_tree_view import ScrollableTreeView
 from src.gui.widget.context_menu import ContextMenu
 import tkinter as tk
 from tkinter import ttk, Event, messagebox
 from src.model.database_schema import BankAccountSchema
+from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder import ScrollableTreeViewBuilder, ScrollableTreeViewDirector
 from src.repository.bank_account_repository import BankAccountRepository
 
 
@@ -24,17 +24,9 @@ class BankAccountScreen(ttk.Frame):
         
         # Define columns
         columns = ("id","iban")
-        self.table = ScrollableTreeView(self, columns=columns, show="headings", selectmode= "browse")
-        
-        # Bind events
-        self.table.bind('<Button-3>', self.on_right_click)
-
-        self.table.pack(side=tk.LEFT, fill="both", expand=True)
-
-        # Configure the headers (what appears on top)
-        for column in columns:
-            self.table.tree_view.heading(column=column, text=column.capitalize())
-            self.table.tree_view.column(column=column, stretch=True)
+        scrollableTreeViewDirrector = ScrollableTreeViewDirector(ScrollableTreeViewBuilder(master=self, columns=columns)) 
+        bindings=[{'sequence': '<Button-3>', 'func': self.on_right_click, 'add': None}]
+        self.table = scrollableTreeViewDirrector.build_scrollable_tree_view(show='headings', selectmode='browse', fill='both', side=tk.LEFT, expand=True, bindings=bindings)
 
         # Insert data
         data = self.repository.get_all()
