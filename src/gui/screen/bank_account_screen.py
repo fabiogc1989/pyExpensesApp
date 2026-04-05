@@ -23,8 +23,7 @@ class BankAccountScreen(ttk.Frame):
         search_frame.pack(anchor="ne")
         
         # Define columns
-        columns = ("id","iban")
-        scrollableTreeViewDirrector = ScrollableTreeViewDirector(ScrollableTreeViewBuilder(master=self, columns=columns)) 
+        scrollableTreeViewDirrector = ScrollableTreeViewDirector(ScrollableTreeViewBuilder(master=self, columns=("id","iban"))) 
         bindings=[{'sequence': '<Button-3>', 'func': self.on_right_click, 'add': None}]
         self.table = scrollableTreeViewDirrector.build_scrollable_tree_view(show='headings', selectmode='browse', fill='both', side=tk.LEFT, expand=True, bindings=bindings)
 

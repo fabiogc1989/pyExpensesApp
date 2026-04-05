@@ -108,7 +108,7 @@ class ScrollableTreeViewDirector:
     def builder(self, builder):
         self._builder = builder
 
-    def build_scrollable_tree_view(self, show: str, selectmode: str, fill: str, side: str, expand: bool, bindings: list[dict[str, Callable, bool]]) -> ScrollableTreeView:
+    def build_scrollable_tree_view(self, show: str, selectmode: str, fill: str, side: str, expand: bool, bindings: list[dict[str, Callable, bool]] = []) -> ScrollableTreeView:
         self._builder\
             .with_show(show)\
             .with_selectmode(selectmode)

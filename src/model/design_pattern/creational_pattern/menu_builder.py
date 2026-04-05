@@ -4,6 +4,7 @@ from src.gui.modal.bank_account_form_modal import BankAccountFormModal
 from src.gui.screen.add_transaction_screen import AddTransactionScreen
 from src.gui.screen.bank_account_screen import BankAccountScreen
 from src.gui.screen.start_screen import StartScreen
+from src.gui.screen.view_transactions_screen import ViewTransactionsScreen
 from src.model.transaction_type import TransactionType
 from src.util.gui import change_screen
 
@@ -78,7 +79,7 @@ class MenuDirector:
                     .add_item('Debit', command=lambda: change_screen(master, AddTransactionScreen(master.container, transaction_type=TransactionType.DEBIT)))\
                     .add_item('Credit', command=lambda: change_screen(master, AddTransactionScreen(master.container, transaction_type=TransactionType.CREDIT)))\
                 .back()\
-                .add_item('View Transactions', command=lambda: print("View Transactions clicked"))
+                .add_item('View Transactions', command=lambda: change_screen(master, ViewTransactionsScreen(master.container)))
         
         # Add Help menu
         self._builder\
