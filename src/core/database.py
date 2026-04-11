@@ -58,7 +58,8 @@ class Debit(Base):
 class TransactionView(Base):
     __tablename__ = 'v_transactions'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    unique_row_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int]
     description: Mapped[str]
     amount: Mapped[float]
     date: Mapped[date]
@@ -74,11 +75,21 @@ class TransactionView(Base):
 
 create_view_ddl = DDL("""
 CREATE VIEW IF NOT EXISTS v_transactions AS
-SELECT id, description, amount, DATE, bank_account_id, 'DEBIT' AS type
-FROM debit
-UNION ALL
-SELECT id, description, amount, DATE, bank_account_id, 'CREDIT' AS type
-FROM credit
+SELECT
+	ROW_NUMBER() OVER () AS unique_row_id,
+	t.id,
+	t.description,
+	t.amount,
+	t.DATE,
+	t.bank_account_id,
+	t."type" 
+FROM (
+	SELECT id, description, amount, DATE, bank_account_id, 'DEBIT' AS type
+	FROM debit
+	UNION ALL
+	SELECT id, description, amount, DATE, bank_account_id, 'CREDIT' AS type
+	FROM credit
+) t
 """)
 
 event.listen(Base.metadata, 'after_create', create_view_ddl)
