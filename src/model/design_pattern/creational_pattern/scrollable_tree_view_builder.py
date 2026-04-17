@@ -108,18 +108,71 @@ class ScrollableTreeViewDirector:
     def builder(self, builder):
         self._builder = builder
 
-    def build_scrollable_tree_view(self, show: str, selectmode: str, fill: str, side: str, expand: bool, bindings: list[dict[str, Callable, bool]] = []) -> ScrollableTreeView:
+    def build_standard_tree_view(self, bindings: list[dict[str, Callable, bool]] = []) -> ScrollableTreeView:
+        """Build a standard tree view with headings, browse selection, and default packing."""
         self._builder\
-            .with_show(show)\
-            .with_selectmode(selectmode)
+            .with_show('headings')\
+            .with_selectmode('browse')
 
         for binding in bindings:
             sequence, func, add = binding["sequence"], binding["func"], binding["add"]
             self._builder.add_binding(sequence, func, add)
 
         self._builder\
-            .with_pack_side(side)\
-            .with_pack_fill(fill)\
-            .with_pack_expand(expand)
+            .with_pack_side('left')\
+            .with_pack_fill('both')\
+            .with_pack_expand(True)
+
+        return self._builder.build()
+
+    def build_selectable_tree_view(self, bindings: list[dict[str, Callable, bool]] = []) -> ScrollableTreeView:
+        """Build a tree view optimized for multiple selection."""
+        self._builder\
+            .with_show('headings')\
+            .with_selectmode('extended')
+
+        for binding in bindings:
+            sequence, func, add = binding["sequence"], binding["func"], binding["add"]
+            self._builder.add_binding(sequence, func, add)
+
+        self._builder\
+            .with_pack_side('left')\
+            .with_pack_fill('both')\
+            .with_pack_expand(True)
+
+        return self._builder.build()
+
+    def build_compact_tree_view(self, height: int = 10, bindings: list[dict[str, Callable, bool]] = []) -> ScrollableTreeView:
+        """Build a compact tree view with fixed height."""
+        self._builder\
+            .with_show("headings")\
+            .with_selectmode("browse")\
+            .with_height(height)
+
+        for binding in bindings:
+            sequence, func, add = binding["sequence"], binding["func"], binding["add"]
+            self._builder.add_binding(sequence, func, add)
+
+        self._builder\
+            .with_pack_side("left")\
+            .with_pack_fill("both")\
+            .with_pack_expand(False)
+
+        return self._builder.build()
+
+    def build_tree_only_view(self, bindings: list[dict[str, Callable, bool]] = []) -> ScrollableTreeView:
+        """Build a tree view showing only the tree structure without headings."""
+        self._builder\
+            .with_show('tree')\
+            .with_selectmode('browse')
+
+        for binding in bindings:
+            sequence, func, add = binding["sequence"], binding["func"], binding["add"]
+            self._builder.add_binding(sequence, func, add)
+
+        self._builder\
+            .with_pack_side('left')\
+            .with_pack_fill('both')\
+            .with_pack_expand(True)
 
         return self._builder.build()

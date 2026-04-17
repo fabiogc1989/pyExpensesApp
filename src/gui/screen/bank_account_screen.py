@@ -25,7 +25,7 @@ class BankAccountScreen(ttk.Frame):
         # Define columns
         scrollableTreeViewDirrector = ScrollableTreeViewDirector(ScrollableTreeViewBuilder(master=self, columns=("id","iban"))) 
         bindings=[{'sequence': '<Button-3>', 'func': self.on_right_click, 'add': None}]
-        self.table = scrollableTreeViewDirrector.build_scrollable_tree_view(show='headings', selectmode='browse', fill='both', side=tk.LEFT, expand=True, bindings=bindings)
+        self.table = scrollableTreeViewDirrector.build_selectable_tree_view(bindings=bindings)
 
         # Insert data
         data = self.repository.get_all()
