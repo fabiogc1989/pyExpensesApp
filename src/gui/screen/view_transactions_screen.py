@@ -14,7 +14,7 @@ class ViewTransactionsScreen(ttk.Frame):
         self.pack(fill="both", expand=True)
 
         scrollableTreeViewDirrector = ScrollableTreeViewDirector(ScrollableTreeViewBuilder(master=self, columns=('id', 'description', 'amount', 'date', 'type', 'bank_account_id')))
-        self.table = scrollableTreeViewDirrector.build_scrollable_tree_view(show='headings', selectmode='browse', fill='both', side=tk.LEFT, expand=True)
+        self.table = scrollableTreeViewDirrector.build_standard_tree_view()
 
         # Insert data
         data = self.repository.get_all()
