@@ -11,26 +11,26 @@ from src.util.gui import change_screen
 
 class MenuBuilder:
     def __init__(self, root):
-        self.root = root
-        self.menu_bar = Menu(master=self.root)
-        self.stack = []
+        self._root = root
+        self._menu_bar = Menu(master=self._root)
+        self._stack = []
     
     @property
     def current_menu(self):
-        return self.stack[-1] if self.stack else None
+        return self._stack[-1] if self._stack else None
 
     def add_main_menu(self, label):
-        main_menu = Menu(self.menu_bar, tearoff=0)
-        self.menu_bar.add_cascade(label=label, menu=main_menu)
-        self.stack = [main_menu]
+        main_menu = Menu(self._menu_bar, tearoff=0)
+        self._menu_bar.add_cascade(label=label, menu=main_menu)
+        self._stack = [main_menu]
         return self
     
     def add_sub_menu(self, label):
-        if not self.stack:
+        if not self._stack:
             raise ValueError("No main menu defined. Call add_main_menu() first.")
         sub_menu = Menu(self.current_menu, tearoff=0)
         self.current_menu.add_cascade(label=label, menu=sub_menu)
-        self.stack.append(sub_menu)
+        self._stack.append(sub_menu)
         return self
 
     def add_item(self, label, command = None):
@@ -40,25 +40,17 @@ class MenuBuilder:
         return self
     
     def back(self):
-        if len(self.stack) > 1:
-            self.stack.pop()
+        if len(self._stack) > 1:
+            self._stack.pop()
         return self
     
     def build(self):
-        self.root.config(menu=self.menu_bar)
-        return self.menu_bar
+        self._root.config(menu=self._menu_bar)
+        return self._menu_bar
 
 
 class MenuDirector:
     def __init__(self, builder: MenuBuilder):
-        self._builder = builder
-    
-    @property
-    def menu(self):
-        return self._builder
-    
-    @menu.setter
-    def menu(self, builder):
         self._builder = builder
 
     def build_app_menu(self, master):
@@ -86,4 +78,4 @@ class MenuDirector:
             .add_main_menu('Help')\
                 .add_item('About', command=lambda: change_screen(master, StartScreen(master.container)))
         
-        return self.menu.build()
+        return self._builder.build()

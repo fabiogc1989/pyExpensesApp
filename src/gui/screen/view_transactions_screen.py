@@ -7,7 +7,7 @@ from src.repository.transaction_view_repository import TransactionViewRepository
 
 
 class ViewTransactionsScreen(ttk.Frame):
-    repository = Inject(TransactionViewRepository)
+    __repository: TransactionViewRepository = Inject(TransactionViewRepository)
 
     def __init__(self, master):
         super().__init__(master)
@@ -17,7 +17,7 @@ class ViewTransactionsScreen(ttk.Frame):
         self.table = scrollableTreeViewDirrector.build_standard_tree_view()
 
         # Insert data
-        data = self.repository.get_all()
+        data = self.__repository.get_all()
         for item in data:
             self.table.tree_view.insert(parent="",index=tk.END, iid=item.unique_row_id, values=(item.id, item.description, item.amount, item.date, item.type, item.bank_account_id))
         

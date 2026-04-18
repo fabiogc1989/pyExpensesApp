@@ -17,10 +17,10 @@ from src.repository.debit_repository import DebitRepository
 
 
 class AddTransactionScreen(ttk.Frame):
-    bank_account_repo = Inject(BankAccountRepository)
-    debit_repo = Inject(DebitRepository)
-    credit_repo = Inject(CreditRepository)
-    
+    __bank_account_repo: BankAccountRepository = Inject(BankAccountRepository)
+    __debit_repo: DebitRepository = Inject(DebitRepository)
+    __credit_repo: CreditRepository = Inject(CreditRepository)
+
     def __init__(self, master, transaction_type: TransactionType):
         super().__init__(master)
 
@@ -70,7 +70,7 @@ class AddTransactionScreen(ttk.Frame):
     
     def _load_bank_accounts(self):
         try:
-            self._bank_accounts = self.bank_account_repo.get_all()
+            self._bank_accounts = self.__bank_account_repo.get_all()
             
             # Preencher o Combobox apenas com os IBANs
             self.bank_account_combobox['values'] = [account.iban for account in self._bank_accounts]

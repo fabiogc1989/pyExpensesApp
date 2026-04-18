@@ -10,7 +10,7 @@ from .form_modal import FormModal
 
 
 class BankAccountFormModal(FormModal[BankAccountSchema]):
-    repo = Inject(BankAccountRepository)
+    __repo: BankAccountRepository = Inject(BankAccountRepository)
 
     def __init__(self, master = None, model: BankAccountSchema = None):
         super().__init__(master=master)

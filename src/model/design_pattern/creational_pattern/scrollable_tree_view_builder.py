@@ -6,82 +6,82 @@ from src.gui.widget.scrollable_tree_view import ScrollableTreeView
 
 class ScrollableTreeViewBuilder:
     def __init__(self, master, columns):
-        self.master = master
-        self.columns = columns
-        self.treeview_options = {}
-        self.pack_options = {
+        self._master = master
+        self._columns = columns
+        self._treeview_options = {}
+        self._pack_options = {
             "side": tk.LEFT,
             "fill": "both",
             "expand": False
         }
-        self.bindings = []
+        self._bindings = []
 
     def with_treeview_option(self, key, value):
         """Set a Treeview option (show, selectmode, height, etc.)"""
-        self.treeview_options[key] = value
+        self._treeview_options[key] = value
         return self
 
     def with_show(self, value):
         """Set the show option (e.g., 'headings', 'tree', 'tree headings')"""
-        self.treeview_options["show"] = value
+        self._treeview_options["show"] = value
         return self
 
     def with_selectmode(self, value):
         """Set the selectmode option (e.g., 'browse', 'extended', 'multiple')"""
-        self.treeview_options["selectmode"] = value
+        self._treeview_options["selectmode"] = value
         return self
 
     def with_height(self, height: int):
         """Set the height of the Treeview"""
-        self.treeview_options["height"] = height
+        self._treeview_options["height"] = height
         return self
 
     def with_pack_side(self, side):
         """Set the pack side option"""
-        self.pack_options["side"] = side
+        self._pack_options["side"] = side
         return self
 
     def with_pack_fill(self, fill):
         """Set the pack fill option"""
-        self.pack_options["fill"] = fill
+        self._pack_options["fill"] = fill
         return self
 
     def with_pack_expand(self, expand: bool):
         """Set the pack expand option"""
-        self.pack_options["expand"] = expand
+        self._pack_options["expand"] = expand
         return self
 
     def with_pack_options(self, side=None, fill=None, expand=None, **kwargs):
         """Set multiple pack options at once"""
         if side is not None:
-            self.pack_options["side"] = side
+            self._pack_options["side"] = side
         if fill is not None:
-            self.pack_options["fill"] = fill
+            self._pack_options["fill"] = fill
         if expand is not None:
-            self.pack_options["expand"] = expand
-        self.pack_options.update(kwargs)
+            self._pack_options["expand"] = expand
+        self._pack_options.update(kwargs)
         return self
 
     def add_binding(self, sequence: str, func: Callable, add: bool | Literal['', '+'] | None = None):
         """Add an event binding"""
-        self.bindings.append({"sequence": sequence, "func": func, "add": add})
+        self._bindings.append({"sequence": sequence, "func": func, "add": add})
         return self
 
     def build(self) -> ScrollableTreeView:
         """Build and return the ScrollableTreeView instance"""
         table = ScrollableTreeView(
-            self.master,
-            self.columns,
-            **self.treeview_options
+            self._master,
+            self._columns,
+            **self._treeview_options
         )
 
         # Configure the headers (what appears on top)
-        for column in self.columns:
+        for column in self._columns:
             table.tree_view.heading(column=column, text=column.capitalize())
             table.tree_view.column(column=column, stretch=True)
 
         # Apply bindings
-        for binding in self.bindings:
+        for binding in self._bindings:
             table.bind(
                 sequence=binding["sequence"],
                 func=binding["func"],
@@ -89,8 +89,8 @@ class ScrollableTreeViewBuilder:
             )
 
         # Pack the tree view with configured options
-        pack_kwargs = {k: v for k, v in self.pack_options.items() if k in ["side", "fill", "expand"]}
-        extra_pack_options = {k: v for k, v in self.pack_options.items() if k not in ["side", "fill", "expand"]}
+        pack_kwargs = {k: v for k, v in self._pack_options.items() if k in ["side", "fill", "expand"]}
+        extra_pack_options = {k: v for k, v in self._pack_options.items() if k not in ["side", "fill", "expand"]}
         table.pack(**pack_kwargs, **extra_pack_options)
 
         return table
@@ -98,14 +98,6 @@ class ScrollableTreeViewBuilder:
 
 class ScrollableTreeViewDirector:
     def __init__(self, builder: ScrollableTreeViewBuilder):
-        self._builder = builder
-
-    @property
-    def builder(self):
-        return self._builder
-
-    @builder.setter
-    def builder(self, builder):
         self._builder = builder
 
     def build_standard_tree_view(self, bindings: list[dict[str, Callable, bool]] = []) -> ScrollableTreeView:

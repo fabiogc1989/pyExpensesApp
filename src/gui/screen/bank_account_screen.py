@@ -9,7 +9,7 @@ from src.repository.bank_account_repository import BankAccountRepository
 
 
 class BankAccountScreen(ttk.Frame):
-    repository = Inject(BankAccountRepository)
+    __repository: BankAccountRepository = Inject(BankAccountRepository)
 
     def __init__(self, master):
         super().__init__(master)
@@ -28,7 +28,7 @@ class BankAccountScreen(ttk.Frame):
         self.table = scrollableTreeViewDirrector.build_selectable_tree_view(bindings=bindings)
 
         # Insert data
-        data = self.repository.get_all()
+        data = self.__repository.get_all()
         for item in data:
             self.table.tree_view.insert(parent="",index=tk.END, iid=item.id, values=(item.id, item.iban))
         
@@ -44,7 +44,7 @@ class BankAccountScreen(ttk.Frame):
     
     def _delete_table_row(self, item: tuple[any, ...]):
         if messagebox.askyesno(title='Delete Confirmation', message='Are you sure you want to delete this bank account?', icon='warning'):
-            self.repository.delete(item[0])
+            self.__repository.delete(item[0])
             self.table.tree_view.delete(item[0])
 
     def on_right_click(self, event: Event):

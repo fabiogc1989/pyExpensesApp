@@ -25,18 +25,18 @@ class TransactionStrategy(ABC):
 
 
 class DebitStrategy(TransactionStrategy):
-    repo = Inject(DebitRepository)
+    __repo: DebitRepository = Inject(DebitRepository)
 
     @override
     def save(self, data: dict):
         entity = DebitSchema(**data)
-        self.repo.insert(entity)
+        self.__repo.insert(entity)
     
 
 class CreditStrategy(TransactionStrategy):
-    repo = Inject(CreditRepository)
+    __repo: CreditRepository = Inject(CreditRepository)
 
     @override
     def save(self, data: dict):
         entity = CreditSchema(**data)
-        self.repo.insert(entity)
+        self.__repo.insert(entity)

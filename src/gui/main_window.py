@@ -10,15 +10,31 @@ class MainWindow(tk.Tk):
         super().__init__()
         self.title('pyExpenses')
         self._setup_widgets()
+    
+    @property
+    def container(self):
+        return self.__container
+    
+    @container.setter
+    def container(self, container):
+        self.__container = container
+
+    @property
+    def current_screen(self):
+        return self.__current_screen
+    
+    @current_screen.setter
+    def current_screen(self, screen):
+        self.__current_screen = screen
         
     def _setup_widgets(self):     
         # Container for screens
-        self.container = tk.Frame(self)
-        self.container.pack(fill="both", expand=True)
+        self.__container = tk.Frame(self)
+        self.__container.pack(fill="both", expand=True)
 
         menu_builder = MenuBuilder(self)
         MenuDirector(menu_builder).build_app_menu(self)
 
         # Initialize screens
-        self._current_screen = None        
-        change_screen(self, StartScreen(self.container))
+        self.current_screen = None
+        change_screen(self, StartScreen(self.__container))
