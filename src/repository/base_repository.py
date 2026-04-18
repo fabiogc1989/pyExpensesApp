@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
 
-class BaseRepository[T](ABC):
+class BaseReadRepository[T](ABC):
     """
-    Generic abstract repository interface.
+    Generic abstract read-only repository interface.
 
-    Subclasses should implement methods to perform basic CRUD operations
+    Subclasses should implement methods to perform read operations
     for entities of type `T`. Methods are intentionally abstract so that
     different storage backends (in-memory, file, database) can provide
     concrete implementations.
@@ -34,6 +34,16 @@ class BaseRepository[T](ABC):
         """
         ...
 
+
+class BaseWriteRepository[T](ABC):
+    """
+    Generic abstract write-only repository interface.
+
+    Subclasses should implement methods to perform write operations
+    for entities of type `T`. Methods are intentionally abstract so that
+    different storage backends (in-memory, file, database) can provide
+    concrete implementations.
+    """
     @abstractmethod
     def delete(self, id: int) -> None:
         """
@@ -66,3 +76,15 @@ class BaseRepository[T](ABC):
         :type entity: T
         """
         ...
+
+
+class BaseRepository[T](BaseReadRepository[T], BaseWriteRepository[T]):
+    """
+    Generic abstract repository interface that combines both read and write operations.
+
+    Subclasses should implement methods to perform both read and write operations
+    for entities of type `T`. Methods are intentionally abstract so that
+    different storage backends (in-memory, file, database) can provide
+    concrete implementations.
+    """
+    ...

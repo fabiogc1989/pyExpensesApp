@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from typing import override
 
 from src.core.di import Inject
-from src.model.database_schema import CreditSchema, CreditSchema, DebitSchema
+from src.model.db_schema.credit_schema import CreditSchema
+from src.model.db_schema.debit_schema import DebitSchema
 from src.repository.credit_repository import CreditRepository
 from src.repository.debit_repository import DebitRepository
 

@@ -1,10 +1,11 @@
 from src.core.database import SessionLocal, TransactionView
 from src.exception.repository_exception import RepositoryException
 from src.model.db_schema.transaction_vew_schema import TransactionViewSchema
+from src.repository.base_repository import BaseReadRepository
 from src.core.di import ioc
 
 @ioc.register
-class TransactionViewRepository:
+class TransactionViewRepository(BaseReadRepository[TransactionViewSchema]):
     def get_all(self) -> list[TransactionViewSchema]|iter[TransactionViewSchema]:
         try:
             with SessionLocal() as session:
