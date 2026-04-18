@@ -13,7 +13,7 @@ engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
 
 # 3. Create a session factory
 # Each time we call SessionLocal(), we get a new session with the database
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
 
 
 # 4. Define the database models
@@ -69,7 +69,8 @@ class TransactionView(Base):
         'BankAccount',
         primaryjoin='TransactionView.bank_account_id == BankAccount.id',
         foreign_keys=[bank_account_id],
-        viewonly=True
+        viewonly=True,
+        lazy='joined'
     )
 
 
