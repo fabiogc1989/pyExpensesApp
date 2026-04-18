@@ -1,6 +1,6 @@
 from src.core.database import SessionLocal, TransactionView
 from src.exception.repository_exception import RepositoryException
-from src.model.database_schema import TransactionViewSchema
+from src.model.db_schema.transaction_vew_schema import TransactionViewSchema
 from src.core.di import ioc
 
 @ioc.register

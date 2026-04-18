@@ -1,6 +1,6 @@
 from src.core.database import SessionLocal, Credit
 from src.exception.repository_exception import RepositoryException
-from src.model.database_schema import CreditSchema
+from src.model.db_schema.credit_schema import CreditSchema
 from src.repository.base_repository import BaseRepository
 from src.core.di import ioc
 

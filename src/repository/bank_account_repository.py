@@ -1,6 +1,6 @@
 from src.core.database import SessionLocal, BankAccount
 from src.exception.repository_exception import RepositoryException
-from src.model.database_schema import BankAccountSchema
+from src.model.db_schema.bank_account_schema import BankAccountSchema
 from src.core.di import ioc
 from .base_repository import BaseRepository
 

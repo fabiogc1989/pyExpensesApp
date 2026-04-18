@@ -3,7 +3,7 @@ from tkinter import messagebox, ttk
 from pydantic import ValidationError
 from src.core.di import Inject, ioc
 from src.exception.repository_exception import RepositoryException
-from src.model.database_schema import BankAccountSchema
+from src.model.db_schema.bank_account_schema import BankAccountSchema
 from src.repository.bank_account_repository import BankAccountRepository
 
 from .form_modal import FormModal

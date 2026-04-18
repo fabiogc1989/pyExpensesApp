@@ -1,6 +1,6 @@
 from src.core.database import SessionLocal, Debit
 from src.exception.repository_exception import RepositoryException
-from src.model.database_schema import DebitSchema
+from src.model.db_schema.debit_schema import DebitSchema
 from src.repository.base_repository import BaseRepository
 from src.core.di import ioc
 

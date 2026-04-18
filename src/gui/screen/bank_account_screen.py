@@ -3,7 +3,7 @@ from src.gui.modal.bank_account_form_modal import BankAccountFormModal
 from src.gui.widget.context_menu import ContextMenu
 import tkinter as tk
 from tkinter import ttk, Event, messagebox
-from src.model.database_schema import BankAccountSchema
+from src.model.db_schema.bank_account_schema import BankAccountSchema
 from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder import ScrollableTreeViewBuilder, ScrollableTreeViewDirector
 from src.repository.bank_account_repository import BankAccountRepository
 
