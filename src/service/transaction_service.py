@@ -1,6 +1,7 @@
 from src.core.di import Inject, ioc
 from src.model.transaction import Transaction
-from src.model.transaction_type import TransactionType, TransactionTypeValues
+from src.model.transaction_search import TransactionSearch
+from src.model.transaction_type import TransactionTypeValues
 from src.repository.credit_repository import CreditRepository
 from src.repository.debit_repository import DebitRepository
 from src.repository.transaction_view_repository import TransactionViewRepository
@@ -11,8 +12,8 @@ class TransactionService:
     __credit_repo: CreditRepository = Inject(CreditRepository)
     __debit_repo: DebitRepository = Inject(DebitRepository)
 
-    def search_transactions(self) -> list[Transaction]:
-        data = self.__transaction_view_repo.get_all()
+    def search_transactions(self, search_model: TransactionSearch) -> list[Transaction]:
+        data = self.__transaction_view_repo.search_transactions(search_model)
         return [Transaction(
             row_number=item.unique_row_id, 
             transaction_id=item.id, 
