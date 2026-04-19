@@ -39,6 +39,6 @@ class DebitSchema(BaseModel):
     @field_validator('bank_account_id')
     @classmethod
     def validate_bank_account_id(cls, v: int) -> int:
-        if v < 0:
-            raise ValueError('Bank account ID must be a non-negative integer.')
+        if v <= 0:
+            raise ValueError('Bank account ID must be a positive integer.')
         return v
