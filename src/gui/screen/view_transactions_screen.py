@@ -42,11 +42,11 @@ class ViewTransactionsScreen(ttk.Frame):
 
         min_date_label = ttk.Label(search_frame, text="Min. Date")
         min_date_label.grid(row=0, column=6, sticky=tk.EW, columnspan=3)
-        self.date_entry = DateEntry(
+        self.min_date_entry = DateEntry(
             search_frame,
             date_pattern='y-mm-dd' # Formato ISO para facilitar salvar no banco
         )
-        self.date_entry.grid(row=1, column=6, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
+        self.min_date_entry.grid(row=1, column=6, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
 
         max_date_label = ttk.Label(search_frame, text="Max. Date")
         max_date_label.grid(row=0, column=9, sticky=tk.EW, columnspan=3)
@@ -62,22 +62,32 @@ class ViewTransactionsScreen(ttk.Frame):
         self.transaction_type_combobox.grid(row=3, column=6, sticky=tk.EW, columnspan=6, pady=10)
         self.transaction_type_combobox.set(TransactionType.ALL.name)
 
-        search_button = ttk.Button(search_frame, text="Search", command=lambda: print("Search button clicked"))
+        search_button = ttk.Button(search_frame, text="Search", command=self._search_transactions)
         search_button.grid(row=4, column=11, sticky=tk.EW)
-
         search_frame.pack(fill="x", padx=10, pady=10)
 
         scrollableTreeViewDirrector = ScrollableTreeViewDirector(ScrollableTreeViewBuilder(master=self, columns=('Transaction ID', 'Description', 'Amount', 'Date', 'Type', 'IBAN')))
         self.table = scrollableTreeViewDirrector.build_standard_tree_view()
+        self._search_transactions()
         
-        search_model2 = TransactionSearch()
-        
-        # Insert data
-        data = self.__service.search_transactions(search_model2)
-        for item in data:
-            self.table.tree_view.insert(parent="",index=tk.END, iid=item.row_number, values=(item.transaction_id, item.description, item.amount, item.date, item.type.name, item.iban))
-    
     def _validate_amount_entry(self, P):
         if P == "" or P.replace(".", "", 1).isdigit():
             return True
         return False
+    
+    def _search_transactions(self):
+        search_model = TransactionSearch(
+            iban=self.bank_account_combobox.get() if self.bank_account_combobox.get() else None,
+            min_amount=float(self.min_amount_entry.get()) if self.min_amount_entry.get() else None,
+            max_amount=float(self.max_amount_entry.get()) if self.max_amount_entry.get() else None,
+            min_date=self.min_date_entry.get_date(),
+            max_date=self.max_date_entry.get_date(),
+            type=TransactionType[self.transaction_type_combobox.get()]
+        )
+        results = self.__service.search_transactions(search_model)
+        # Clear existing data
+        for item in self.table.tree_view.get_children():
+            self.table.tree_view.delete(item)
+        # Insert new data
+        for item in results:
+            self.table.tree_view.insert(parent="", index=tk.END, iid=item.row_number, values=(item.transaction_id, item.description, item.amount, item.date, item.type.name, item.iban))
