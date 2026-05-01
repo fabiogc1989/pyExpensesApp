@@ -1,16 +1,23 @@
 from src.core.di import Inject, ioc
 from src.model.transaction import Transaction
-from src.model.transaction_search import TransactionSearch
+from src.model.transaction_search import TransactionInputSearch, TransactionSearch
 from src.model.transaction_type import TransactionTypeValues
+from src.repository.bank_account_repository import BankAccountRepository
 from src.repository.credit_repository import CreditRepository
 from src.repository.debit_repository import DebitRepository
 from src.repository.transaction_view_repository import TransactionViewRepository
 
 @ioc.register
 class TransactionService:
+    __bank_account_repo: BankAccountRepository = Inject(BankAccountRepository)
     __transaction_view_repo: TransactionViewRepository = Inject(TransactionViewRepository)
     __credit_repo: CreditRepository = Inject(CreditRepository)
     __debit_repo: DebitRepository = Inject(DebitRepository)
+
+    def get_search_model(self) -> TransactionInputSearch:
+        bank_accounts = self.__bank_account_repo.get_all()
+        model = TransactionInputSearch(ibanList = [bank_account.iban for bank_account in bank_accounts])
+        return model
 
     def search_transactions(self, search_model: TransactionSearch) -> list[Transaction]:
         data = self.__transaction_view_repo.search_transactions(search_model)
