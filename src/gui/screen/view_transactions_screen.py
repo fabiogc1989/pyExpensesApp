@@ -4,7 +4,8 @@ from tkinter import ttk
 from tkcalendar import DateEntry
 
 from src.core.di import Inject
-from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder import ScrollableTreeViewBuilder, ScrollableTreeViewDirector
+from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder \
+    import ScrollableTreeViewBuilder, ScrollableTreeViewDirector
 from src.model.transaction_search import TransactionSearch
 from src.model.transaction_type import TransactionType
 from src.service.transaction_service import TransactionService
@@ -34,15 +35,21 @@ class ViewTransactionsScreen(ttk.Frame):
 
         min_amount_label = ttk.Label(search_frame, text="Min. Amount")
         min_amount_label.grid(row=2, column=0, sticky=tk.EW, columnspan=3)
-        self.min_amount_entry = ttk.Entry(search_frame, validate="key", validatecommand=(
-            self.register(self._validate_amount_entry), '%P'))
+        self.min_amount_entry = ttk.Entry(
+            search_frame,
+            validate="key",
+            validatecommand=(self.register(self._validate_amount_entry), '%P')
+        )
         self.min_amount_entry.grid(
             row=3, column=0, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
 
         max_amount_label = ttk.Label(search_frame, text="Max. Amount")
         max_amount_label.grid(row=2, column=3, sticky=tk.EW, columnspan=3)
-        self.max_amount_entry = ttk.Entry(search_frame, validate="key", validatecommand=(
-            self.register(self._validate_amount_entry), '%P'))
+        self.max_amount_entry = ttk.Entry(
+            search_frame,
+            validate="key",
+            validatecommand=(self.register(self._validate_amount_entry), '%P')
+        )
         self.max_amount_entry.grid(
             row=3, column=3, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
 
@@ -77,7 +84,10 @@ class ViewTransactionsScreen(ttk.Frame):
         transaction_type_label.grid(
             row=2, column=6, sticky=tk.EW, columnspan=3)
         self.transaction_type_combobox = ttk.Combobox(
-            search_frame, state="readonly", values=[t.name for t in TransactionType])
+            search_frame,
+            state="readonly",
+            values=[t.name for t in TransactionType]
+        )
         self.transaction_type_combobox.grid(
             row=3, column=6, sticky=tk.EW, columnspan=6, pady=10)
         self.transaction_type_combobox.set(TransactionType.ALL.name)
@@ -87,8 +97,19 @@ class ViewTransactionsScreen(ttk.Frame):
         search_button.grid(row=4, column=11, sticky=tk.EW)
         search_frame.pack(fill="x", padx=10, pady=10)
 
-        scrollableTreeViewDirrector = ScrollableTreeViewDirector(ScrollableTreeViewBuilder(
-            master=self, columns=('Transaction ID', 'Description', 'Amount', 'Date', 'Type', 'IBAN')))
+        scrollableTreeViewDirrector = ScrollableTreeViewDirector(
+            ScrollableTreeViewBuilder(
+                master=self,
+                columns=(
+                    'Transaction ID',
+                    'Description',
+                    'Amount',
+                    'Date',
+                    'Type',
+                    'IBAN'
+                )
+            )
+        )
         self.table = scrollableTreeViewDirrector.build_standard_tree_view()
         self._search_transactions()
 
@@ -98,8 +119,9 @@ class ViewTransactionsScreen(ttk.Frame):
         return False
 
     def _search_transactions(self):
+        iban = self.bank_account_combobox.get()
         search_model = TransactionSearch(
-            iban=self.bank_account_combobox.get() if self.bank_account_combobox.get() else None,
+            iban=iban if iban else None,
             min_amount=float(self.min_amount_entry.get()
                              ) if self.min_amount_entry.get() else None,
             max_amount=float(self.max_amount_entry.get()
@@ -114,5 +136,16 @@ class ViewTransactionsScreen(ttk.Frame):
             self.table.tree_view.delete(item)
         # Insert new data
         for item in results:
-            self.table.tree_view.insert(parent="", index=tk.END, iid=item.row_number, values=(
-                item.transaction_id, item.description, item.amount, item.date, item.type.name, item.iban))
+            self.table.tree_view.insert(
+                parent="",
+                index=tk.END,
+                iid=item.row_number,
+                values=(
+                    item.transaction_id,
+                    item.description,
+                    item.amount,
+                    item.date,
+                    item.type.name,
+                    item.iban
+                )
+            )
