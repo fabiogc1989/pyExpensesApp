@@ -1,3 +1,4 @@
+from datetime import date
 import tkinter as tk 
 from tkinter import ttk
 from tkcalendar import DateEntry
@@ -47,6 +48,10 @@ class ViewTransactionsScreen(ttk.Frame):
             date_pattern='y-mm-dd' # Formato ISO para facilitar salvar no banco
         )
         self.min_date_entry.grid(row=1, column=6, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
+        if search_model.start_date is not None:
+            self.min_date_entry.set_date(search_model.start_date)
+        else:
+            self.min_date_entry.set_date(date.today())
 
         max_date_label = ttk.Label(search_frame, text="Max. Date")
         max_date_label.grid(row=0, column=9, sticky=tk.EW, columnspan=3)
@@ -55,6 +60,10 @@ class ViewTransactionsScreen(ttk.Frame):
             date_pattern='y-mm-dd' # Formato ISO para facilitar salvar no banco
         )
         self.max_date_entry.grid(row=1, column=9, sticky=tk.EW, columnspan=3, pady=10)
+        if search_model.end_date is not None:
+            self.max_date_entry.set_date(search_model.end_date)
+        else:
+            self.max_date_entry.set_date(date.today())
 
         transaction_type_label = ttk.Label(search_frame, text="Transaction Type")
         transaction_type_label.grid(row=2, column=6, sticky=tk.EW, columnspan=3)
@@ -80,8 +89,8 @@ class ViewTransactionsScreen(ttk.Frame):
             iban=self.bank_account_combobox.get() if self.bank_account_combobox.get() else None,
             min_amount=float(self.min_amount_entry.get()) if self.min_amount_entry.get() else None,
             max_amount=float(self.max_amount_entry.get()) if self.max_amount_entry.get() else None,
-            min_date=self.min_date_entry.get_date(),
-            max_date=self.max_date_entry.get_date(),
+            start_date=self.min_date_entry.get_date(),
+            end_date=self.max_date_entry.get_date(),
             type=TransactionType[self.transaction_type_combobox.get()]
         )
         results = self.__service.search_transactions(search_model)
