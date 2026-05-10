@@ -1,22 +1,26 @@
-from datetime import date
 import tkinter as tk
+from datetime import date
 from tkinter import ttk
+from typing import cast
+
 from tkcalendar import DateEntry
 
 from src.core.di import Inject
-from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder \
-    import ScrollableTreeViewBuilder, ScrollableTreeViewDirector
+from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder import (
+    ScrollableTreeViewBuilder,
+    ScrollableTreeViewDirector,
+)
 from src.model.transaction_search import TransactionSearch
 from src.model.transaction_type import TransactionType
 from src.service.transaction_service import TransactionService
 
 
 class ViewTransactionsScreen(ttk.Frame):
-    __service: TransactionService = Inject(TransactionService)
+    __service: TransactionService = cast(TransactionService, Inject(TransactionService))
 
     def __init__(self, master):
         super().__init__(master)
-        self.pack(fill="both", expand=True)
+        self.pack(fill='both', expand=True)
 
         search_frame = ttk.Frame(self)
 
@@ -26,76 +30,81 @@ class ViewTransactionsScreen(ttk.Frame):
 
         search_model = self.__service.get_search_model()
 
-        bank_account_label = ttk.Label(search_frame, text="IBAN")
+        bank_account_label = ttk.Label(search_frame, text='IBAN')
         bank_account_label.grid(row=0, column=0, sticky=tk.EW, columnspan=6)
         self.bank_account_combobox = ttk.Combobox(
-            search_frame, state="readonly", values=search_model.ibanList)
+            search_frame, state='readonly', values=search_model.ibanList
+        )
         self.bank_account_combobox.grid(
-            row=1, column=0, sticky=tk.EW, columnspan=6, pady=10, padx=(0, 10))
+            row=1, column=0, sticky=tk.EW, columnspan=6, pady=10, padx=(0, 10)
+        )
 
-        min_amount_label = ttk.Label(search_frame, text="Min. Amount")
+        min_amount_label = ttk.Label(search_frame, text='Min. Amount')
         min_amount_label.grid(row=2, column=0, sticky=tk.EW, columnspan=3)
         self.min_amount_entry = ttk.Entry(
             search_frame,
-            validate="key",
-            validatecommand=(self.register(self._validate_amount_entry), '%P')
+            validate='key',
+            validatecommand=(self.register(self._validate_amount_entry), '%P'),
         )
         self.min_amount_entry.grid(
-            row=3, column=0, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
+            row=3, column=0, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10)
+        )
 
-        max_amount_label = ttk.Label(search_frame, text="Max. Amount")
+        max_amount_label = ttk.Label(search_frame, text='Max. Amount')
         max_amount_label.grid(row=2, column=3, sticky=tk.EW, columnspan=3)
         self.max_amount_entry = ttk.Entry(
             search_frame,
-            validate="key",
-            validatecommand=(self.register(self._validate_amount_entry), '%P')
+            validate='key',
+            validatecommand=(self.register(self._validate_amount_entry), '%P'),
         )
         self.max_amount_entry.grid(
-            row=3, column=3, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
+            row=3, column=3, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10)
+        )
 
-        min_date_label = ttk.Label(search_frame, text="Min. Date")
+        min_date_label = ttk.Label(search_frame, text='Min. Date')
         min_date_label.grid(row=0, column=6, sticky=tk.EW, columnspan=3)
         self.min_date_entry = DateEntry(
             search_frame,
-            date_pattern='y-mm-dd'  # Format ISO to easy save in db
+            date_pattern='y-mm-dd',  # Format ISO to easy save in db
         )
         self.min_date_entry.grid(
-            row=1, column=6, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10))
+            row=1, column=6, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10)
+        )
         if search_model.start_date is not None:
             self.min_date_entry.set_date(search_model.start_date)
         else:
             self.min_date_entry.set_date(date.today())
 
-        max_date_label = ttk.Label(search_frame, text="Max. Date")
+        max_date_label = ttk.Label(search_frame, text='Max. Date')
         max_date_label.grid(row=0, column=9, sticky=tk.EW, columnspan=3)
         self.max_date_entry = DateEntry(
             search_frame,
-            date_pattern='y-mm-dd'  # Format ISO to easy save in db
+            date_pattern='y-mm-dd',  # Format ISO to easy save in db
         )
-        self.max_date_entry.grid(
-            row=1, column=9, sticky=tk.EW, columnspan=3, pady=10)
+        self.max_date_entry.grid(row=1, column=9, sticky=tk.EW, columnspan=3, pady=10)
         if search_model.end_date is not None:
             self.max_date_entry.set_date(search_model.end_date)
         else:
             self.max_date_entry.set_date(date.today())
 
-        transaction_type_label = ttk.Label(
-            search_frame, text="Transaction Type")
-        transaction_type_label.grid(
-            row=2, column=6, sticky=tk.EW, columnspan=3)
+        transaction_type_label = ttk.Label(search_frame, text='Transaction Type')
+        transaction_type_label.grid(row=2, column=6, sticky=tk.EW, columnspan=3)
         self.transaction_type_combobox = ttk.Combobox(
-            search_frame,
-            state="readonly",
-            values=[t.name for t in TransactionType]
+            search_frame, state='readonly', values=[t.name for t in TransactionType]
         )
         self.transaction_type_combobox.grid(
-            row=3, column=6, sticky=tk.EW, columnspan=6, pady=10)
+            row=3, column=6, sticky=tk.EW, columnspan=6, pady=10
+        )
         self.transaction_type_combobox.set(TransactionType.ALL.name)
 
+        reset_button = ttk.Button(search_frame, text='Clear', command=self._clear_search)
+        reset_button.grid(row=4, column=10, padx=(0, 5), sticky=tk.EW)
         search_button = ttk.Button(
-            search_frame, text="Search", command=self._search_transactions)
+            search_frame, text='Search', command=self._search_transactions
+        )
         search_button.grid(row=4, column=11, sticky=tk.EW)
-        search_frame.pack(fill="x", padx=10, pady=10)
+
+        search_frame.pack(fill='x', padx=10, pady=10)
 
         scrollableTreeViewDirrector = ScrollableTreeViewDirector(
             ScrollableTreeViewBuilder(
@@ -106,29 +115,34 @@ class ViewTransactionsScreen(ttk.Frame):
                     'Amount',
                     'Date',
                     'Type',
-                    'IBAN'
-                )
+                    'IBAN',
+                ),
             )
         )
         self.table = scrollableTreeViewDirrector.build_standard_tree_view()
         self._search_transactions()
 
     def _validate_amount_entry(self, P):
-        if P == "" or P.replace(".", "", 1).isdigit():
+        if P == '' or P.replace('.', '', 1).isdigit():
             return True
         return False
+
+    def _clear_search(self):
+        pass
 
     def _search_transactions(self):
         iban = self.bank_account_combobox.get()
         search_model = TransactionSearch(
             iban=iban if iban else None,
-            min_amount=float(self.min_amount_entry.get()
-                             ) if self.min_amount_entry.get() else None,
-            max_amount=float(self.max_amount_entry.get()
-                             ) if self.max_amount_entry.get() else None,
+            min_amount=float(self.min_amount_entry.get())
+            if self.min_amount_entry.get()
+            else None,
+            max_amount=float(self.max_amount_entry.get())
+            if self.max_amount_entry.get()
+            else None,
             start_date=self.min_date_entry.get_date(),
             end_date=self.max_date_entry.get_date(),
-            type=TransactionType[self.transaction_type_combobox.get()]
+            type=TransactionType[self.transaction_type_combobox.get()],
         )
         results = self.__service.search_transactions(search_model)
         # Clear existing data
@@ -137,7 +151,7 @@ class ViewTransactionsScreen(ttk.Frame):
         # Insert new data
         for item in results:
             self.table.tree_view.insert(
-                parent="",
+                parent='',
                 index=tk.END,
                 iid=item.row_number,
                 values=(
@@ -146,6 +160,6 @@ class ViewTransactionsScreen(ttk.Frame):
                     item.amount,
                     item.date,
                     item.type.name,
-                    item.iban
-                )
+                    item.iban,
+                ),
             )
