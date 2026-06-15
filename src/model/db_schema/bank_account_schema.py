@@ -1,14 +1,16 @@
 from datetime import date
-from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional
-    
+
+from pydantic import BaseModel, ConfigDict, field_validator
+
+
 class BankAccountSchema(BaseModel):
     id: Optional[int] = None
     iban: str
-    
+
     model_config = ConfigDict(
-        from_attributes=True, # This allows Pydantic to read SQLAlchemy models
-        validate_assignment=True
+        from_attributes=True,  # This allows Pydantic to read SQLAlchemy models
+        validate_assignment=True,
     )
 
     @field_validator('id')
