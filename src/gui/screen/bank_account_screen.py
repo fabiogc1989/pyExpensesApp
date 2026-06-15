@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import Event, messagebox, ttk
+from typing import Any, cast
 
 from src.core.di import Inject
 from src.gui.modal.bank_account_form_modal import BankAccountFormModal
@@ -13,7 +14,9 @@ from src.repository.bank_account_repository import BankAccountRepository
 
 
 class BankAccountScreen(ttk.Frame):
-    __repository: BankAccountRepository = Inject(BankAccountRepository)
+    __repository: BankAccountRepository = cast(
+        BankAccountRepository, Inject(BankAccountRepository)
+    )
 
     def __init__(self, master):
         super().__init__(master)
@@ -47,12 +50,12 @@ class BankAccountScreen(ttk.Frame):
     def _identify_table_row(self, y: int) -> str:
         return self.table.tree_view.identify_row(y)
 
-    def _edit_table_row(self, item: tuple[any, ...]):
+    def _edit_table_row(self, item: tuple[Any, ...]):
         data = BankAccountSchema(id=item[0], iban=item[1])
         BankAccountFormModal(master=self, model=data)
         self.table.tree_view.item(item[0], values=(data.id, data.iban))
 
-    def _delete_table_row(self, item: tuple[any, ...]):
+    def _delete_table_row(self, item: tuple[Any, ...]):
         if messagebox.askyesno(
             title='Delete Confirmation',
             message='Are you sure you want to delete this bank account?',
