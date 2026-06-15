@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 
 
 class BaseReadRepository[T](ABC):
@@ -10,11 +11,12 @@ class BaseReadRepository[T](ABC):
     different storage backends (in-memory, file, database) can provide
     concrete implementations.
     """
+
     @abstractmethod
-    def get_all(self) -> list[T]|iter[T]:
+    def get_all(self) -> list[T] | Iterator[T]:
         """
         Retrieves all records of the entity from the database.
-        
+
         :param self: The repository instance (the current object on which the method is called).
         :return: (List|Iterator) of objects of type T.
         :rtype: list[T]|iter[T]
@@ -25,7 +27,7 @@ class BaseReadRepository[T](ABC):
     def get(self, id: int) -> T:
         """
         Retrieve a record of the entity from the database.
-        
+
         :param self: The repository instance (the current object on which the method is called).
         :param id: The ID of the entity to retrieve.
         :type id: int
@@ -44,11 +46,12 @@ class BaseWriteRepository[T](ABC):
     different storage backends (in-memory, file, database) can provide
     concrete implementations.
     """
+
     @abstractmethod
     def delete(self, id: int) -> None:
         """
         Remove a record of the entity from the database.
-        
+
         :param self: The repository instance (the current object on which the method is called).
         :param id: The ID of the entity to delete.
         :type id: int
@@ -59,7 +62,7 @@ class BaseWriteRepository[T](ABC):
     def update(self, entity: T) -> None:
         """
         Docstring for update
-        
+
         :param self: The repository instance (the current object on which the method is called).
         :param entity: The entity to update
         :type entity: T
@@ -70,7 +73,7 @@ class BaseWriteRepository[T](ABC):
     def insert(self, entity: T) -> None:
         """
         Docstring for insert
-        
+
         :param self: The repository instance (the current object on which the method is called).
         :param entity: The new entity to insert
         :type entity: T
@@ -87,4 +90,5 @@ class BaseRepository[T](BaseReadRepository[T], BaseWriteRepository[T]):
     different storage backends (in-memory, file, database) can provide
     concrete implementations.
     """
+
     ...

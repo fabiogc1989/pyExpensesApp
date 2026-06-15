@@ -3,7 +3,7 @@ from typing import cast
 from src.core.di import Inject, ioc
 from src.model.transaction import Transaction
 from src.model.transaction_search import TransactionInputSearch, TransactionSearch
-from src.model.transaction_type import TransactionTypeValues
+from src.model.transaction_type import TransactionType
 from src.repository.bank_account_repository import BankAccountRepository
 from src.repository.credit_repository import CreditRepository
 from src.repository.debit_repository import DebitRepository
@@ -37,7 +37,7 @@ class TransactionService:
                 description=item.description,
                 amount=item.amount,
                 date=item.date,
-                type=TransactionTypeValues.get(item.type),
+                type=TransactionType[item.type],
                 iban=item.bank_account.iban,
             )
             for item in data
