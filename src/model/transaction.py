@@ -1,6 +1,9 @@
 from datetime import date
+
 from pydantic import BaseModel
+
 from .transaction_type import TransactionType
+
 
 class Transaction(BaseModel):
     row_number: int

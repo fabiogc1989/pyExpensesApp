@@ -1,5 +1,6 @@
 from datetime import date
 from typing import Optional
+
 from pydantic import BaseModel
 
 from src.model.transaction_type import TransactionType
