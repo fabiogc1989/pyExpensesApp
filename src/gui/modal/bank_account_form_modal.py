@@ -1,5 +1,5 @@
 from tkinter import messagebox, ttk
-from typing import cast
+from typing import Optional, cast
 
 from pydantic import ValidationError
 
@@ -16,9 +16,7 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
         BankAccountRepository, Inject(BankAccountRepository)
     )
 
-    def __init__(
-        self, master=None, model: BankAccountSchema = BankAccountSchema(iban='')
-    ):
+    def __init__(self, master=None, model: Optional[BankAccountSchema] = None):
         super().__init__(master=master)
 
         self.success = False
@@ -73,6 +71,8 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
             else:
                 # In edit mode, validate only the changed field
                 # Pydantic will validate via @field_validator('iban')
+                if self.model is None:
+                    raise ValueError('Bank account object is None')
                 self.model.iban = iban_value
                 self.__repo.update(self.model)
 

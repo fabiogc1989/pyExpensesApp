@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from .base_modal import BaseModal
 
@@ -12,7 +12,7 @@ class FormModal[T](BaseModal):
         return self._model
 
     @model.setter
-    def model(self, model: T):
+    def model(self, model: Optional[T]):
         self._model = model
 
     @property
