@@ -1,6 +1,4 @@
-import functools
-import inspect
-from typing import Annotated, Type, get_args, get_origin
+from typing import Type
 
 
 class Dependency:

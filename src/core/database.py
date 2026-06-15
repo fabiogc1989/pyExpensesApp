@@ -1,19 +1,29 @@
+from __future__ import annotations
+
 from datetime import date
 from typing import List
-from sqlalchemy import create_engine, String, Date, ForeignKey, func, DDL, event
-from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship
 
+from sqlalchemy import DDL, Date, ForeignKey, String, create_engine, event, func
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    relationship,
+    sessionmaker,
+)
 
 # 1. Define the database location (SQLite will create a local file)
-DB_URL = "sqlite+pysqlite:///data/expenses.db"
+DB_URL = 'sqlite+pysqlite:///data/expenses.db'
 
 # 2. Create the Engine (the connection engine)
 # 'check_same_thread=False' is required on SQLite to work well with Tkinter
-engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
+engine = create_engine(DB_URL, connect_args={'check_same_thread': False})
 
 # 3. Create a session factory
 # Each time we call SessionLocal(), we get a new session with the database
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
+SessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, expire_on_commit=False
+)
 
 
 # 4. Define the database models
@@ -26,7 +36,7 @@ class BankAccount(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     iban: Mapped[str] = mapped_column(String(34), nullable=False)
-    
+
     debits: Mapped[List[Debit]] = relationship('Debit', back_populates='bank_account')
     credits: Mapped[List[Credit]] = relationship('Credit', back_populates='bank_account')
 
@@ -38,9 +48,13 @@ class Credit(Base):
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     amount: Mapped[float] = mapped_column(nullable=False)
     date: Mapped[date] = mapped_column(Date, nullable=False, server_default=func.now())
-    
-    bank_account_id: Mapped[int] = mapped_column(ForeignKey('bank_account.id'), nullable=False)
-    bank_account: Mapped[BankAccount] = relationship('BankAccount', back_populates='credits')
+
+    bank_account_id: Mapped[int] = mapped_column(
+        ForeignKey('bank_account.id'), nullable=False
+    )
+    bank_account: Mapped[BankAccount] = relationship(
+        'BankAccount', back_populates='credits'
+    )
 
 
 class Debit(Base):
@@ -50,9 +64,13 @@ class Debit(Base):
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     amount: Mapped[float] = mapped_column(nullable=False)
     date: Mapped[date] = mapped_column(Date, nullable=False, server_default=func.now())
-    
-    bank_account_id: Mapped[int] = mapped_column(ForeignKey('bank_account.id'), nullable=False)
-    bank_account: Mapped[BankAccount] = relationship('BankAccount', back_populates='debits')
+
+    bank_account_id: Mapped[int] = mapped_column(
+        ForeignKey('bank_account.id'), nullable=False
+    )
+    bank_account: Mapped[BankAccount] = relationship(
+        'BankAccount', back_populates='debits'
+    )
 
 
 class TransactionView(Base):
@@ -64,13 +82,15 @@ class TransactionView(Base):
     amount: Mapped[float]
     date: Mapped[date]
     type: Mapped[str]
-    bank_account_id: Mapped[int] = mapped_column(ForeignKey('bank_account.id'), nullable=False)
+    bank_account_id: Mapped[int] = mapped_column(
+        ForeignKey('bank_account.id'), nullable=False
+    )
     bank_account: Mapped[BankAccount] = relationship(
         'BankAccount',
         primaryjoin='TransactionView.bank_account_id == BankAccount.id',
         foreign_keys=[bank_account_id],
         viewonly=True,
-        lazy='joined'
+        lazy='joined',
     )
 
 
@@ -83,7 +103,7 @@ SELECT
 	t.amount,
 	t.DATE,
 	t.bank_account_id,
-	t."type" 
+	t."type"
 FROM (
 	SELECT id, description, amount, DATE, bank_account_id, 'DEBIT' AS type
 	FROM debit
@@ -95,7 +115,7 @@ FROM (
 
 event.listen(Base.metadata, 'after_create', create_view_ddl)
 
-event.listen(Base.metadata, 'before_drop', DDL("DROP VIEW IF EXISTS v_transactions"))
+event.listen(Base.metadata, 'before_drop', DDL('DROP VIEW IF EXISTS v_transactions'))
 
 
 # 5. Create the database tables
