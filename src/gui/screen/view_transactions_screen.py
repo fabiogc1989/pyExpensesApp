@@ -28,12 +28,12 @@ class ViewTransactionsScreen(ttk.Frame):
             search_frame.columnconfigure(i, weight=1)
             search_frame.rowconfigure(i, weight=0)
 
-        search_model = self.__service.get_search_model()
+        self.search_model = self.__service.get_search_model()
 
         bank_account_label = ttk.Label(search_frame, text='IBAN')
         bank_account_label.grid(row=0, column=0, sticky=tk.EW, columnspan=6)
         self.bank_account_combobox = ttk.Combobox(
-            search_frame, state='readonly', values=search_model.ibanList
+            search_frame, state='readonly', values=self.search_model.ibanList
         )
         self.bank_account_combobox.grid(
             row=1, column=0, sticky=tk.EW, columnspan=6, pady=10, padx=(0, 10)
@@ -70,8 +70,8 @@ class ViewTransactionsScreen(ttk.Frame):
         self.min_date_entry.grid(
             row=1, column=6, sticky=tk.EW, columnspan=3, pady=10, padx=(0, 10)
         )
-        if search_model.start_date is not None:
-            self.min_date_entry.set_date(search_model.start_date)
+        if self.search_model.start_date is not None:
+            self.min_date_entry.set_date(self.search_model.start_date)
         else:
             self.min_date_entry.set_date(date.today())
 
@@ -82,8 +82,8 @@ class ViewTransactionsScreen(ttk.Frame):
             date_pattern='y-mm-dd',  # Format ISO to easy save in db
         )
         self.max_date_entry.grid(row=1, column=9, sticky=tk.EW, columnspan=3, pady=10)
-        if search_model.end_date is not None:
-            self.max_date_entry.set_date(search_model.end_date)
+        if self.search_model.end_date is not None:
+            self.max_date_entry.set_date(self.search_model.end_date)
         else:
             self.max_date_entry.set_date(date.today())
 
@@ -128,18 +128,29 @@ class ViewTransactionsScreen(ttk.Frame):
         return False
 
     def _clear_search(self):
-        pass
+        self.bank_account_combobox.set('')
+        self.min_amount_entry.delete(0, tk.END)
+        self.max_amount_entry.delete(0, tk.END)
+
+        if self.search_model.start_date is not None:
+            self.min_date_entry.set_date(self.search_model.start_date)
+        else:
+            self.min_date_entry.set_date(date.today())
+
+        if self.search_model.end_date is not None:
+            self.max_date_entry.set_date(self.search_model.end_date)
+        else:
+            self.max_date_entry.set_date(date.today())
+
+        self.transaction_type_combobox.set(TransactionType.ALL.name)
+        self._search_transactions()
 
     def _search_transactions(self):
         iban = self.bank_account_combobox.get()
         search_model = TransactionSearch(
             iban=iban if iban else None,
-            min_amount=float(self.min_amount_entry.get())
-            if self.min_amount_entry.get()
-            else None,
-            max_amount=float(self.max_amount_entry.get())
-            if self.max_amount_entry.get()
-            else None,
+            min_amount=float(self.min_amount_entry.get()) if self.min_amount_entry.get() else None,
+            max_amount=float(self.max_amount_entry.get()) if self.max_amount_entry.get() else None,
             start_date=self.min_date_entry.get_date(),
             end_date=self.max_date_entry.get_date(),
             type=TransactionType[self.transaction_type_combobox.get()],
