@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "meu-projeto"
+version = "0.1.0"
+description = "O meu projeto Python"
+requires-python = ">=3.14"
+
+[project.scripts]
+app = "src.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
