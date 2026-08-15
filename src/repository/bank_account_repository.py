@@ -4,6 +4,7 @@ from typing import override
 from src.core.database import BankAccount, SessionLocal
 from src.core.di import ioc
 from src.exception.repository_exception import RepositoryException
+from src.model.bank_account_search import BankAccountSearch
 from src.model.db_schema.bank_account_schema import BankAccountSchema
 
 from .base_repository import BaseRepository
@@ -69,4 +70,19 @@ class BankAccountRepository(BaseRepository[BankAccountSchema]):
         except Exception as e:
             raise RepositoryException(
                 f'Error inserting bank account with ID {entity.id}: {str(e)}'
+            )
+
+    def search_bank_accounts(self,search_model: BankAccountSearch) -> list[BankAccountSchema] | Iterator[BankAccountSchema]:
+        try:
+            with SessionLocal() as session:
+                query = session.query(BankAccount)
+
+                if search_model.iban is not None and search_model.iban != '':
+                    query = query.filter(BankAccount.iban == search_model.iban)
+
+                entities = query.all()
+                return [BankAccountSchema.model_validate(entity) for entity in entities]
+        except Exception as e:
+            raise RepositoryException(
+                f'Error searching bank accounts: {str(e)}'
             )

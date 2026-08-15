@@ -10,12 +10,15 @@ from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder im
     ScrollableTreeViewBuilder,
     ScrollableTreeViewDirector,
 )
+from src.model.bank_account_search import BankAccountSearch
+from src.service.bank_account_service import BankAccountService
 from src.repository.bank_account_repository import BankAccountRepository
+from src.service.bank_account_service import BankAccountService
 
 
 class BankAccountScreen(ttk.Frame):
-    __repository: BankAccountRepository = cast(
-        BankAccountRepository, Inject(BankAccountRepository)
+    __service: BankAccountService = cast(
+        BankAccountService, Inject(BankAccountService)
     )
 
     def __init__(self, master):
@@ -23,9 +26,9 @@ class BankAccountScreen(ttk.Frame):
         self.pack(fill='both', expand=True)
 
         search_frame = ttk.Frame(master=self)
-        iban_search_entry = ttk.Entry(master=search_frame)
-        iban_search_entry.grid(column=0, row=0)
-        search_button = ttk.Button(master=search_frame, text='Search')
+        self.iban_search_entry = ttk.Entry(master=search_frame)
+        self.iban_search_entry.grid(column=0, row=0)
+        search_button = ttk.Button(master=search_frame, text='Search', command=self._search_bank_accounts)
         search_button.grid(column=1, row=0)
         search_frame.pack(anchor='ne')
 
@@ -38,13 +41,7 @@ class BankAccountScreen(ttk.Frame):
             bindings=bindings
         )
 
-        # Insert data
-        data = self.__repository.get_all()
-        for item in data:
-            self.table.tree_view.insert(
-                parent='', index=tk.END, iid=item.id, values=(item.id, item.iban)
-            )
-
+        self._search_bank_accounts()
         self.contextMenu = None
 
     def _identify_table_row(self, y: int) -> str:
@@ -61,7 +58,7 @@ class BankAccountScreen(ttk.Frame):
             message='Are you sure you want to delete this bank account?',
             icon='warning',
         ):
-            self.__repository.delete(item[0])
+            self.__service.delete_bank_account(item[0])
             self.table.tree_view.delete(item[0])
 
     def on_right_click(self, event: Event):
@@ -80,3 +77,15 @@ class BankAccountScreen(ttk.Frame):
             ]
             self.contextMenu = ContextMenu(master=self, commands=commands)
             self.contextMenu.show_menu(event=event)
+
+    def _search_bank_accounts(self):
+        search_model = BankAccountSearch(iban=self.iban_search_entry.get())
+        results = self.__service.search_bank_account(search_model)
+        # Clear existing data
+        for item in self.table.tree_view.get_children():
+            self.table.tree_view.delete(item)
+        # Insert new data
+        for item in results:
+            self.table.tree_view.insert(
+                parent='', index=tk.END, iid=item.id, values=(item.id, item.iban)
+            )
