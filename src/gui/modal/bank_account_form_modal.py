@@ -5,15 +5,17 @@ from pydantic import ValidationError
 
 from src.core.di import Inject
 from src.exception.repository_exception import RepositoryException
+from src.exception.service_exception import ServiceException
 from src.model.db_schema.bank_account_schema import BankAccountSchema
 from src.repository.bank_account_repository import BankAccountRepository
+from src.service.bank_account_service import BankAccountService
 
 from .form_modal import FormModal
 
 
 class BankAccountFormModal(FormModal[BankAccountSchema]):
-    __repo: BankAccountRepository = cast(
-        BankAccountRepository, Inject(BankAccountRepository)
+    __service: BankAccountService = cast(
+        BankAccountService, Inject(BankAccountService)
     )
 
     def __init__(self, master=None, model: Optional[BankAccountSchema] = None):
@@ -67,21 +69,21 @@ class BankAccountFormModal(FormModal[BankAccountSchema]):
                 # Create a new schema.
                 # Note: debits and credits start as empty lists by default in your Schema
                 self.model = BankAccountSchema(iban=iban_value)
-                self.__repo.insert(self.model)
+                self.__service.add_bank_account(self.model)
             else:
                 # In edit mode, validate only the changed field
                 # Pydantic will validate via @field_validator('iban')
                 if self.model is None:
                     raise ValueError('Bank account object is None')
                 self.model.iban = iban_value
-                self.__repo.update(self.model)
+                self.__service.update_bank_account(self.model)
 
             self.success = True
             self.destroy()
-        except RepositoryException as e:
-            # Capture repository-specific errors (e.g. duplicate IBAN)
+        except ServiceException as e:
+            # Capture service-specific errors (e.g. duplicate IBAN)
             messagebox.showerror(
-                'Repository Error', f'An error occurred while saving:\n{str(e)}'
+                'Service Error', f'An error occurred while saving:\n{str(e)}'
             )
         except ValidationError as e:
             # Capture Pydantic errors (e.g. empty IBAN or negative ID)

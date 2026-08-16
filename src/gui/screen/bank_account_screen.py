@@ -12,8 +12,8 @@ from src.model.design_pattern.creational_pattern.scrollable_tree_view_builder im
 )
 from src.model.bank_account_search import BankAccountSearch
 from src.service.bank_account_service import BankAccountService
-from src.repository.bank_account_repository import BankAccountRepository
-from src.service.bank_account_service import BankAccountService
+
+from src.exception.service_exception import ServiceException
 
 
 class BankAccountScreen(ttk.Frame):
@@ -53,14 +53,19 @@ class BankAccountScreen(ttk.Frame):
         self.table.tree_view.item(item[0], values=(data.id, data.iban))
 
     def _delete_table_row(self, item: tuple[Any, ...]):
-        if messagebox.askyesno(
-            title='Delete Confirmation',
-            message='Are you sure you want to delete this bank account?',
-            icon='warning',
-        ):
-            self.__service.delete_bank_account(item[0])
-            self.table.tree_view.delete(item[0])
-
+        try:
+            if messagebox.askyesno(
+                title='Delete Confirmation',
+                message='Are you sure you want to delete this bank account?',
+                icon='warning',
+            ):
+                self.__service.delete_bank_account(item[0])
+                self.table.tree_view.delete(item[0])
+        except ServiceException as e:
+            messagebox.showerror('Error', f'Failed to delete bank account:\n{str(e)}')
+        except Exception as e:
+            messagebox.showerror('Error', f'An unexpected error occurred while deleting bank account:\n{str(e)}')
+        
     def on_right_click(self, event: Event):
         if self.contextMenu is not None:
             self.contextMenu.destroy()
@@ -79,13 +84,18 @@ class BankAccountScreen(ttk.Frame):
             self.contextMenu.show_menu(event=event)
 
     def _search_bank_accounts(self):
-        search_model = BankAccountSearch(iban=self.iban_search_entry.get())
-        results = self.__service.search_bank_account(search_model)
-        # Clear existing data
-        for item in self.table.tree_view.get_children():
-            self.table.tree_view.delete(item)
-        # Insert new data
-        for item in results:
-            self.table.tree_view.insert(
-                parent='', index=tk.END, iid=item.id, values=(item.id, item.iban)
-            )
+        try:
+            search_model = BankAccountSearch(iban=self.iban_search_entry.get())
+            results = self.__service.search_bank_account(search_model)
+            # Clear existing data
+            for item in self.table.tree_view.get_children():
+                self.table.tree_view.delete(item)
+            # Insert new data
+            for item in results:
+                self.table.tree_view.insert(
+                    parent='', index=tk.END, iid=item.id, values=(item.id, item.iban)
+                )
+        except ServiceException as e:
+            messagebox.showerror('Error', f'Failed to search bank accounts:\n{str(e)}')
+        except Exception as e:
+            messagebox.showerror('Error', f'An unexpected error occurred while searching bank accounts:\n{str(e)}')

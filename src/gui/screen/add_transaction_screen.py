@@ -7,7 +7,7 @@ from pydantic import ValidationError
 from tkcalendar import DateEntry
 
 from src.core.di import Inject
-from src.exception.repository_exception import RepositoryException
+from src.exception.service_exception import ServiceException
 from src.model.design_pattern.behavioral_pattern.strategy.transaction_strategy import (
     CreditStrategy,
     DebitStrategy,
@@ -15,11 +15,12 @@ from src.model.design_pattern.behavioral_pattern.strategy.transaction_strategy i
 )
 from src.model.transaction_type import TransactionType
 from src.repository.bank_account_repository import BankAccountRepository
+from src.service.bank_account_service import BankAccountService
 
 
 class AddTransactionScreen(ttk.Frame):
-    __bank_account_repo: BankAccountRepository = cast(
-        BankAccountRepository, Inject(BankAccountRepository)
+    __bank_account_service: BankAccountService = cast(
+        BankAccountService, Inject(BankAccountService)
     )
 
     def __init__(self, master, transaction_type: TransactionType):
@@ -80,14 +81,16 @@ class AddTransactionScreen(ttk.Frame):
 
     def _load_bank_accounts(self):
         try:
-            self._bank_accounts = self.__bank_account_repo.get_all()
+            self._bank_accounts = self.__bank_account_service.get_all_bank_accounts()
 
             # Preencher o Combobox apenas com os IBANs
             self.bank_account_combobox['values'] = [
                 account.iban for account in self._bank_accounts
             ]
-        except Exception as e:
+        except ServiceException as e:
             messagebox.showerror('Error', f'Failed to load bank accounts:\n{str(e)}')
+        except Exception as e:
+            messagebox.showerror('Error', f'An unexpected error occurred while loading bank accounts:\n{str(e)}')
 
     def _validate_amount_entry(self, P):
         if P == '' or P.replace('.', '', 1).isdigit():
@@ -113,10 +116,10 @@ class AddTransactionScreen(ttk.Frame):
             }
             self.transaction_context.save(data)
             messagebox.showinfo('Success', 'Transaction added successfully!')
-        except RepositoryException as e:
-            # Capture repository-specific errors (e.g. database connection issues)
+        except ServiceException as e:
+            # Capture service-specific errors (e.g. database connection issues)
             messagebox.showerror(
-                'Repository Error', f'Failed to save transaction:\n{str(e)}'
+                'Service Error', f'Failed to save transaction:\n{str(e)}'
             )
         except ValidationError as e:
             # Capture Pydantic errors (e.g. empty IBAN or negative ID)
